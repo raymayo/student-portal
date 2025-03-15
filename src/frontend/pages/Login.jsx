@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useContext } from "react";
 import { loginUser } from "../api/authApi.js"; // API call
 import AuthContext from "../context/AuthContext.jsx"; // Auth context
@@ -7,9 +8,9 @@ const Login = () => {
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        role: "student", // Default selection
-        email: "",
-        password: ""
+        role: "admin", // Default selection
+        email: "ray@admin.com",
+        password: "admin"
     });
     const [error, setError] = useState("");
 

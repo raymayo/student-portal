@@ -4,6 +4,9 @@ import dotenv from  'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import authRoutes from "./src/backend/routes/authRoutes.js";
+import scheduleRoutes from "./src/backend/routes/scheduleRoutes.js"; // Ensure correct path
+import courseRoutes from "./src/backend/routes/courseRoutes.js";
+import userRoutes from "./src/backend/routes/userRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +23,11 @@ app.use(express.json());
 
   app.use("/api/auth", authRoutes);
 
+  app.use('/api/schedules', scheduleRoutes);
+
+  app.use("/api/courses", courseRoutes); 
+
+  app.use("/api/users", userRoutes);     
 
   const PORT = process.env.PORT || 5000;
   
