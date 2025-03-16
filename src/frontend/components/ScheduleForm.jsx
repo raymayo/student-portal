@@ -20,6 +20,7 @@ const ScheduleForm = ({ onScheduleAdded }) => {
 		room: '',
 		startTime: '',
 		endTime: '',
+		teacher: null,
 	});
 
 	const [courses, setCourses] = useState([]);
