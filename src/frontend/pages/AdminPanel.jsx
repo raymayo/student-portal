@@ -1,5 +1,7 @@
 import React from 'react'
 import ScheduleForm from '../components/ScheduleForm.jsx'
+import StudentRegistration from '../components/StudentRegistration.jsx';
+import TeacherRegistration from '../components/TeacherRegistration.jsx';
 
 const AdminPanel = () => {
   const fetchSchedules = async () => {
@@ -12,8 +14,9 @@ const AdminPanel = () => {
   };
 
   return (
-    <div>
-      <ScheduleForm onScheduleAdded={fetchSchedules}/>
+    <div className='grid place-items-center w-full h-full'>
+      {/* <ScheduleForm onScheduleAdded={fetchSchedules}/> */}
+      <TeacherRegistration/>
     </div>
   )
 }

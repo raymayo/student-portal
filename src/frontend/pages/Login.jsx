@@ -91,7 +91,7 @@ const Login = () => {
                     />
                 </label>
 
-                <button type="submit" className="px-3 py-2 rounded-md bg-black border text-white text-sm w-full max-w-[400px] shadow-2xs">
+                <button type="submit" className="px-3 py-2 rounded-md bg-black border text-white text-sm w-full max-w-[400px] shadow-2xs cursor-pointer">
                     Sign In
                 </button>
             </form>
