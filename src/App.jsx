@@ -28,7 +28,7 @@ function App() {
 						</Route>
 
 						<Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-							<Route path="/admin" element={<AdminPanel />} />
+							<Route path="/admin/*" element={<AdminPanel />} />
 						</Route>
 
 						{/* ✅ Catch-all for unmatched routes */}

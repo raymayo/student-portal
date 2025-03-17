@@ -72,19 +72,34 @@ export const assignTeacherToSchedule = async (req, res) => {
       }
 
       // Check if teacher exists and has the correct role
-      const teacher = await User.findById(teacherId);
-      if (!teacher || teacher.role !== 'teacher') {
+      const newTeacher = await User.findById(teacherId);
+      if (!newTeacher || newTeacher.role !== 'teacher') {
           return res.status(400).json({ error: 'Invalid teacher selected' });
       }
 
-      // Update schedule with the teacher
+      // If schedule already has a teacher, remove it from the old teacher's `teachingSchedules`
+      if (schedule.teacher) {
+          const oldTeacher = await User.findById(schedule.teacher);
+          if (oldTeacher) {
+              oldTeacher.teachingSchedules = oldTeacher.teachingSchedules.filter(schedId => schedId.toString() !== id);
+              await oldTeacher.save();
+          }
+      }
+
+      // Assign new teacher to schedule
       schedule.teacher = teacherId;
       await schedule.save();
 
-      res.json({ message: 'Teacher assigned successfully', schedule });
+      // ✅ Ensure new teacher has this schedule in their `teachingSchedules`
+      if (!newTeacher.teachingSchedules.includes(id)) {
+          newTeacher.teachingSchedules.push(id);
+          await newTeacher.save();
+      }
+
+      res.json({ message: 'Teacher reassigned successfully', schedule, newTeacher });
   } catch (error) {
       console.error('Server Error:', error);
-      res.status(500).json({ error: 'Error assigning teacher' });
+      res.status(500).json({ error: 'Error reassigning teacher' });
   }
 };
 

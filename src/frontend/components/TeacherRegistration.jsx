@@ -60,10 +60,10 @@ const TeacherRegistration = () => {
 
     return (
         <form
-            className="p-6 bg-white shadow-xs rounded-md border border-zinc-200 w-full max-w-[800px] flex flex-col gap-4"
+            className="p-6 bg-white rounded-md w-full max-w-[800px] flex flex-col gap-4"
             onSubmit={handleSubmit}
         >
-             <div className='mb-2'>
+             <div className='mb-6'>
                     <h1 className="text-xl font-semibold">Teacher Registration</h1>
                     <p className='text-sm text-zinc-500'>Complete the Form to register teacher</p>
                 </div>

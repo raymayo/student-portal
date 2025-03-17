@@ -13,7 +13,7 @@ const fullTimeSlots = [
 	{ startTime: 1300, endTime: 1330 },
 ];
 
-const ScheduleForm = ({ onScheduleAdded }) => {
+const ScheduleForm = () => {
 	const [schedule, setSchedule] = useState({
 		course: '',
 		day: '',
@@ -141,8 +141,8 @@ const ScheduleForm = ({ onScheduleAdded }) => {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="p-6 bg-white shadow-xs rounded-md border border-zinc-200 w-full max-w-[500px]">
-                <div className='mb-4'>
+			className="p-6 bg-white rounded-md  w-full max-w-[700px]">
+                <div className='mb-6'>
                     <h1 className="text-xl font-semibold">Create Schedule</h1>
                     <p className='text-sm text-zinc-500'>Complete the Form to create a schedule</p>
                 </div>
