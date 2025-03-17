@@ -1,20 +1,9 @@
-import express from "express";
-import Course from "../models/Course.js"; // Ensure correct model path
+import Course from "../models/Course.js"; // Ensure this path is correct
 
-const router = express.Router();
-
-// Get all courses
-router.get("/", async (req, res) => {
-    try {
-        const courses = await Course.find();
-        res.json(courses);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching courses" });
-    }
-});
-
-// Create a new course
-router.post("/", async (req, res) => {
+// @desc    Create a new course
+// @route   POST /api/courses
+// @access  Public (or Protected, depending on your setup)
+export const createCourse = async (req, res) => {
     try {
         const { courseId, courseName, courseUnit, areaOfStudy, semester, yearLevel } = req.body;
 
@@ -36,7 +25,7 @@ router.post("/", async (req, res) => {
             courseUnit,
             areaOfStudy,
             semester,
-            yearLevel,
+            yearLevel
         });
 
         // Save to database
@@ -47,6 +36,4 @@ router.post("/", async (req, res) => {
         console.error("Error creating course:", error);
         res.status(500).json({ error: "Internal server error." });
     }
-});
-
-export default router;
+};
