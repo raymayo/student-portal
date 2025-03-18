@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createSchedule } from '../services/scheduleService';
+import { createSchedule } from '../../services/scheduleService';
 import axios from 'axios';
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

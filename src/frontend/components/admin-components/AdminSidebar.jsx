@@ -25,6 +25,9 @@ const AdminSidebar = () => {
         <NavLink to="/admin/courses" className={({ isActive }) => `flex items-center gap-2 p-3 text-base rounded-md transition-all ${isActive ? "bg-zinc-200/50" : "hover:bg-zinc-200/50"}`}>
           <BookOpen size={20} /> Manage Courses
         </NavLink>
+        <NavLink to="/admin/student" className={({ isActive }) => `flex items-center gap-2 p-3 text-base rounded-md transition-all ${isActive ? "bg-zinc-200/50" : "hover:bg-zinc-200/50"}`}>
+          <BookOpen size={20} /> Manage Student
+        </NavLink>
 
         {/* <button className="flex items-center gap-2 p-3 rounded-md bg-red-600 hover:bg-red-700 transition-all">
           <LogOut size={20} /> Logout

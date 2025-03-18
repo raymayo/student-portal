@@ -5,16 +5,30 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["student", "teacher", "admin"], default: "student" },
-    studentId: { type: String, unique: true, sparse: true }, // Only for students
-    teacherId: { type: String, unique: true, sparse: true }, // Only for teachers
     phone: { type: String },
     birthday: { type: Date },
     gender: { type: String, enum: ["Male", "Female", "Other"] },
     address: { type: String },
     department: { type: String },
+
+
+
+
+
+
+
+    //STUDENT ONLY
+    currentSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }], // For students only
+    studentId: { type: String, unique: true, sparse: true }, // Only for students
+    yearLevel:{type: String},
+    // set:{type:mongoose.Schema.Types.ObjectId, ref},
+
+
+
+    //TEACHER ONLY
     specialization: { type: String },
     teachingSchedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }], // For teachers only
-    currentSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }], // For students only
+    teacherId: { type: String, unique: true, sparse: true }, // Only for teachers
 }, { timestamps: true });
 
 // Conditionally add fields based on role

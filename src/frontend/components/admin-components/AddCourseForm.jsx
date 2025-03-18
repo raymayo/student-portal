@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import Modal from './Modal'; // Import Modal component
+import Modal from '../Modal'; // Import Modal component
 
 const AddCourseForm = () => {
 	const [formData, setFormData] = useState({

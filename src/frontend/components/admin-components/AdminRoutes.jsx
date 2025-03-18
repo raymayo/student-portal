@@ -1,8 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import ScheduleForm from "../components/ScheduleForm";
-import TeacherRegistration from "../components/TeacherRegistration";
-import AssignTeacherForm from "../components/AssignTeacherForm";
-import AddCourseForm from "../components/AddCourseForm";
+import ScheduleForm from "./ScheduleForm";
+import TeacherRegistration from "./TeacherRegistration.jsx";
+import AssignTeacherForm from "./AssignTeacherForm.jsx";
+import AddCourseForm from "./AddCourseForm.jsx";
+import StudentRegistration from "./StudentRegistration.jsx";
 
 const AdminRoutes = ({ fetchSchedules }) => {
   return (
@@ -12,6 +13,7 @@ const AdminRoutes = ({ fetchSchedules }) => {
       <Route path="/teachers" element={<TeacherRegistration />} />
       <Route path="/assign-teacher" element={<AssignTeacherForm />} />
       <Route path="/courses" element={<AddCourseForm />} />
+      <Route path="/student" element={<StudentRegistration />} />
     </Routes>
   );
 };

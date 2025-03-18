@@ -1,5 +1,5 @@
-import AdminSidebar from "../components/AdminSidebar";
-import AdminRoutes from "../components/AdminRoutes";
+import AdminSidebar from "../components/admin-components/AdminSidebar.jsx";
+import AdminRoutes from "../components/admin-components/AdminRoutes.jsx";
 import { useState } from "react";
 import axios from "axios";
 
