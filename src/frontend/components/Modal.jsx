@@ -24,13 +24,13 @@ const Modal = ({ isOpen, onClose, title, message, type }) => {
 
 				<div className="flex flex-col justify-center items-center">
 					<h2
-						className={`text-xl font-semibold ${
+						className={`text-2xl font-semibold ${
 							type === 'success' ? 'text-green-600' : 'text-red-600'
 						}`}>
 					{title}
 					</h2>
 
-					<p className="text-gray-700 mt-2">{message}</p>
+					<p className="text-gray-700">{message}</p>
 
 					<button
 						onClick={onClose}

@@ -36,7 +36,7 @@ const Login = () => {
                     navigate("/teacher-dashboard");
                     break;
                 case "admin":
-                    navigate("/admin");
+                    navigate("/admin/dashboard");
                     break;
                 default:
                     navigate("/unauthorized");
@@ -47,7 +47,7 @@ const Login = () => {
     return (
         <main className="h-full w-full bg-midnight grid grid-cols-2">
             <div className="bg-zinc-900 p-6">
-                <h1 className="text-white font-medium text-xl">Student Portal</h1>
+                <h1 className="text-white font-medium text-3xl">Acadex</h1>
             </div>
             <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center gap-4 p-6">
                 <h1 className="font-bold text-2xl">Sign In</h1>

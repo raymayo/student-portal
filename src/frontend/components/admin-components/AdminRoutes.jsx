@@ -4,6 +4,8 @@ import TeacherRegistration from "./TeacherRegistration.jsx";
 import AssignTeacherForm from "./AssignTeacherForm.jsx";
 import AddCourseForm from "./AddCourseForm.jsx";
 import StudentRegistration from "./StudentRegistration.jsx";
+import TeacherTable from "./TeacherTable.jsx";
+import StudentTable from "./StudentTable.jsx";
 
 const AdminRoutes = ({ fetchSchedules }) => {
   return (
@@ -14,6 +16,8 @@ const AdminRoutes = ({ fetchSchedules }) => {
       <Route path="/assign-teacher" element={<AssignTeacherForm />} />
       <Route path="/courses" element={<AddCourseForm />} />
       <Route path="/student" element={<StudentRegistration />} />
+      <Route path="/teacher-table" element={<TeacherTable/>} />
+      <Route path="/student-table" element={<StudentTable/>} />
     </Routes>
   );
 };

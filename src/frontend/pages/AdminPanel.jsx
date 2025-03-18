@@ -21,7 +21,7 @@ const AdminPanel = () => {
       <AdminSidebar />
 
       {/* Main Content */}
-      <div className="flex w-full justify-center items-center p-6 bg-white">
+      <div className="flex w-full justify-center items-start p-6 bg-white">
         <AdminRoutes />
       </div>
     </div>
