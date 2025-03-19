@@ -49,4 +49,27 @@ router.post("/", async (req, res) => {
     }
 });
 
+
+
+// Get courses with filters
+router.get("/filter", async (req, res) => {
+    try {
+        const { yearLevel, areaOfStudy } = req.query;
+
+        // Build query object based on provided filters
+        const query = {};
+        if (yearLevel) query.yearLevel = yearLevel;
+        if (areaOfStudy) query.areaOfStudy = areaOfStudy;
+
+        // Fetch courses from the database
+        const courses = await Course.find(query);
+
+        res.status(200).json({ courses });
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        res.status(500).json({ error: "Internal server error." });
+    }
+});
+
+
 export default router;

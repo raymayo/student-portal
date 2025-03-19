@@ -40,17 +40,16 @@ const userSchema = new mongoose.Schema(
 
 // Middleware to auto-assign department for students
 userSchema.pre("save", function (next) {
-    if (this.isModified("areaOfStudy") || this.isNew) {
-        if (this.role === "student") {
-            this.department = areaToDepartmentMap[this.areaOfStudy] || "";
-        }
-    }
-
-    // Remove student-only fields for teachers
-    if (this.role === "teacher") {
+    if (this.role === "student" && this.areaOfStudy) {
+        this.department = areaToDepartmentMap[this.areaOfStudy] || "";
+        this.teachingSchedules = undefined;
+    } else if (this.role === "teacher") {
+        if (!this.teachingSchedules) this.teachingSchedules = [];
+        this.currentSubjects = undefined; // Remove student-only fields
+    } else {
         this.currentSubjects = undefined;
+        this.teachingSchedules = undefined;
     }
-
     next();
 });
 

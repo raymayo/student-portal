@@ -1,40 +1,69 @@
 import Schedule from '../models/Schedule.js';
 import User from '../models/User.js'
+import mongoose from 'mongoose';
 
 
 
 export const getSchedules = async (req, res) => {
-  const { yearLevel, department } = req.query;
+  const { yearLevel, department, courseId } = req.query;
 
   try {
       // Fetch schedules and populate the course details
-      const schedules = await Schedule.find()
-          .populate({
-              path: "course",
-              // select: "yearLevel department courseame",
-          })
-          .populate("teacher", "name email") // Populate teacher details
-          .populate("students", "name email"); // Populate student details
+      let query = {};
 
-      // Ensure yearLevel is treated consistently
-      const filteredSchedules = schedules.filter(schedule => {
-          if (!schedule.course) return false; // Ensure course exists
+      if (yearLevel) {
+          query["course.yearLevel"] = yearLevel.trim();
+      }
+      if (department) {
+          query["course.department"] = department.trim().toLowerCase();
+      }
+      if (courseId) {
+          query["course._id"] = courseId;
+      }
 
-          const courseYearLevel = String(schedule.course.yearLevel); // Convert to string for comparison
-          const courseDepartment = schedule.course.department?.trim().toLowerCase(); // Normalize for comparison
+      const schedules = await Schedule.find(query)
+          .populate("course")
+          .populate("teacher", "name email")
+          .populate("students", "name email");
 
-          return (
-              (!yearLevel || courseYearLevel === yearLevel.trim()) &&
-              (!department || courseDepartment === department.trim().toLowerCase())
-          );
-      });
-
-      res.json(filteredSchedules);
+      res.json(schedules);
   } catch (error) {
       res.status(500).json({ message: "Error fetching schedules", error });
   }
 };
 
+
+
+// Fetch schedules by course ID
+export const getSchedulesByCourseId = async (req, res) => {
+  const { courseId } = req.query;
+
+  if (!courseId) {
+    return res.status(400).json({ message: "Course ID is required" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    return res.status(400).json({ message: "Invalid Course ID format" });
+  }
+
+  try {
+    const schedules = await Schedule.find({
+      course: new mongoose.Types.ObjectId(courseId), // Ensuring ObjectId format
+    })
+      .populate("course")
+      .populate("teacher", "name email")
+      .populate("students", "name email");
+
+    if (schedules.length === 0) {
+      return res.status(404).json({ message: "No schedules found for this course ID" });
+    }
+
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error("Error fetching schedules:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
 
 
 
@@ -97,6 +126,24 @@ export const updateSchedule = async (req, res) => {
     res.json(updatedSchedule);
   } catch (error) {
     res.status(500).json({ error: 'Error updating schedule' });
+  }
+};
+
+
+// Fetch schedules based on year level and area of study
+export const getSchedulesByCriteria = async (req, res) => {
+  try {
+    const { yearLevel, areaOfStudy } = req.query;
+
+    if (!yearLevel || !areaOfStudy) {
+      return res.status(400).json({ message: "Missing yearLevel or areaOfStudy" });
+    }
+
+    const schedules = await Schedule.find({ yearLevel, areaOfStudy });
+
+    res.status(200).json(schedules);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -173,3 +220,50 @@ export const deleteSchedule = async (req, res) => {
     res.status(500).json({ error: 'Error deleting schedule' });
   }
 };
+
+
+
+
+// Assign multiple schedules to a student
+export const assignSchedulesToStudent = async (req, res) => {
+  try {
+      const { studentId } = req.params;
+      const { scheduleIds } = req.body;
+
+      console.log("Received Schedule IDs:", scheduleIds);
+
+      if (!Array.isArray(scheduleIds) || scheduleIds.length === 0) {
+          return res.status(400).json({ message: "No schedules selected" });
+      }
+
+      const student = await User.findById(studentId);
+      if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+      }
+
+      if (student.role !== "student") {
+          return res.status(400).json({ message: "User is not a student" });
+      }
+
+      // 🔥 **Filter schedules to avoid duplicates**
+      const existingScheduleIds = student.currentSubjects.map(id => id.toString()); // Convert to string for comparison
+      const newSchedules = scheduleIds.filter(id => !existingScheduleIds.includes(id.toString())); // Only add new schedules
+
+      if (newSchedules.length === 0) {
+          return res.status(400).json({ message: "Selected schedules are already assigned." });
+      }
+
+      // **Assign only new schedules**
+      student.currentSubjects.push(...newSchedules.map(id => new mongoose.Types.ObjectId(id)));
+
+      await student.save();
+      console.log("Updated Student Data:", student);
+
+      res.status(200).json({ message: "Schedules assigned successfully!", student });
+  } catch (error) {
+      console.error("Error assigning schedules:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
