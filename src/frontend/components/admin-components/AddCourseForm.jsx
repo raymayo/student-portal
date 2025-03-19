@@ -28,6 +28,7 @@ const AddCourseForm = () => {
 		setModal({ isOpen: false, title: '', message: '', type: '' });
 
 		try {
+			
 			await axios.post('http://localhost:5000/api/courses', formData, {
 				headers: { 'Content-Type': 'application/json' },
 			});
@@ -51,7 +52,7 @@ const AddCourseForm = () => {
 			setModal({
 				isOpen: true,
 				title: '❌ Error',
-				message: error.response?.data?.message || 'Failed to add course',
+				message: error.response?.data?.error || 'Failed to add course',
 				type: 'error',
 			});
 		}

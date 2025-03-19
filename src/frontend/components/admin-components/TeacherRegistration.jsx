@@ -128,7 +128,7 @@ const TeacherRegistration = () => {
                         onChange={handleChange}
                         className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
                     >
-                        <option value="">Select</option>
+                        <option value="" disabled>Select</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
@@ -158,13 +158,18 @@ const TeacherRegistration = () => {
             <div className="flex gap-2">
                 <label className="w-full flex flex-col gap-1">
                     <h1 className="text-sm font-medium">Department</h1>
-                    <input
-                        type="text"
-                        name="department"
-                        value={teacher.department}
-                        onChange={handleChange}
-                        className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
-                    />
+                    				<select
+                    name="department"
+                    value={teacher.department}
+					onChange={handleChange}
+                    	className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
+					required>
+                    <option value="">Department</option>
+					<option value="Hackers">Hackers</option>
+					<option value="Executives">Executives</option>
+					<option value="Hoteliers">Hoteliers</option>
+					<option value="Headmasters">Headmasters</option>
+				</select>
                 </label>
                 <label className="w-full flex flex-col gap-1">
                     <h1 className="text-sm font-medium">Specialization</h1>

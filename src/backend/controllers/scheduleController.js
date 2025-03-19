@@ -1,15 +1,51 @@
 import Schedule from '../models/Schedule.js';
 import User from '../models/User.js'
 
-// Fetch all schedules with populated teacher and student details
+
+
 export const getSchedules = async (req, res) => {
+  const { yearLevel, department } = req.query;
+
   try {
-    const schedules = await Schedule.find().populate('teacher students', 'name email');
-    res.json(schedules);
+      // Fetch schedules and populate the course details
+      const schedules = await Schedule.find()
+          .populate({
+              path: "course",
+              // select: "yearLevel department courseame",
+          })
+          .populate("teacher", "name email") // Populate teacher details
+          .populate("students", "name email"); // Populate student details
+
+      // Ensure yearLevel is treated consistently
+      const filteredSchedules = schedules.filter(schedule => {
+          if (!schedule.course) return false; // Ensure course exists
+
+          const courseYearLevel = String(schedule.course.yearLevel); // Convert to string for comparison
+          const courseDepartment = schedule.course.department?.trim().toLowerCase(); // Normalize for comparison
+
+          return (
+              (!yearLevel || courseYearLevel === yearLevel.trim()) &&
+              (!department || courseDepartment === department.trim().toLowerCase())
+          );
+      });
+
+      res.json(filteredSchedules);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching schedules' });
+      res.status(500).json({ message: "Error fetching schedules", error });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Fetch all schedules without populating (raw data)
 export const getRawSchedules = async (req, res) => {
@@ -20,6 +56,17 @@ export const getRawSchedules = async (req, res) => {
     res.status(500).json({ error: "Error fetching raw schedules" });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Create a new schedule
@@ -37,6 +84,12 @@ export const createSchedule = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 // Update a schedule
 export const updateSchedule = async (req, res) => {
   try {
@@ -46,6 +99,8 @@ export const updateSchedule = async (req, res) => {
     res.status(500).json({ error: 'Error updating schedule' });
   }
 };
+
+
 
 
 

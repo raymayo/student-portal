@@ -22,6 +22,20 @@ const ScheduleForm = () => {
 		endTime: '',
 		teacher: null,
 	});
+	
+	const onScheduleAdded = async () => {
+		try {
+			// Fetch the updated schedules after adding a new one
+			const updatedScheduleResponse = await axios.get('http://localhost:5000/api/schedules');
+			setExistingSchedules(updatedScheduleResponse.data);
+	
+			// Optionally, show a success message
+			alert('Schedule added successfully!');
+		} catch (error) {
+			console.error('Error refreshing schedule list:', error);
+		}
+	};
+	
 
 	const [courses, setCourses] = useState([]);
 	const [existingSchedules, setExistingSchedules] = useState([]);

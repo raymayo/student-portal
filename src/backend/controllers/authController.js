@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 // REGISTER
 export const register = async (req, res) => {
     try {
-        let { name, email, password, role, studentId, teacherId, phone, birthday, gender, address, department, specialization, yearLevel} = req.body;
+        let { name, email, password, role, studentId, teacherId, phone, birthday, gender, address, department, specialization, yearLevel, areaOfStudy} = req.body;
 
         // Check if user already exists
         const userExists = await User.findOne({ email });
@@ -32,6 +32,7 @@ export const register = async (req, res) => {
             userData.address = address;
             userData.department = department;
             userData.yearLevel = yearLevel
+            userData.areaOfStudy = areaOfStudy
         } 
         else if (role === "teacher") {
             userData.teacherId = teacherId;

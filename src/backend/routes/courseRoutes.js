@@ -29,14 +29,14 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: "Course ID already exists." });
         }
 
-        // Create new course
+        // Create new course (department will be auto-assigned by Mongoose middleware)
         const newCourse = new Course({
             courseId,
             courseName,
             courseUnit,
             areaOfStudy,
             semester,
-            yearLevel,
+            yearLevel
         });
 
         // Save to database
