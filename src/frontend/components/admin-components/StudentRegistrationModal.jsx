@@ -1,5 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
+import Toaster from "../Toaster";
+import { X } from 'lucide-react';
 
 const API_URL = "http://localhost:5000/api/auth"; // Replace with your actual API URL
 
@@ -13,6 +15,12 @@ const registerUser = async (userData) => {
 };
 
 const StudentRegistrationModal = ({ isOpen, onClose }) => {
+
+    const [toast, setToast] = useState({ message: "", type: "" });
+    const showToast = (message, type) => {
+        setToast({ message, type });
+      };
+
     const [student, setStudent] = useState({
         studentId: "",
         name: "",
@@ -63,14 +71,16 @@ const StudentRegistrationModal = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-zinc-950/75 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-md w-full max-w-2xl">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-start pl-6">
+                    <div className="flex flex-col">
                     <h1 className="text-xl font-semibold">Student Registration</h1>
                     <p className="text-sm text-zinc-500">
 					Complete the Form to register teacher
 				</p>
-                    <button onClick={onClose} className="text-zinc-500 hover:text-zinc-900">&times;</button>
+                </div>
+                    <button onClick={onClose} className="text-zinc-500 hover:text-zinc-900 cursor-pointer"><X size={16}/></button>
                 </div>
 
                 <form
@@ -206,12 +216,20 @@ const StudentRegistrationModal = ({ isOpen, onClose }) => {
 				</label>
 			</div>
 			<button
-				type="submit"
+				// type="submit"
+                onClick={() => showToast("User registered successfully!", "success")}
 				className="bg-zinc-900 text-white px-3 py-2 rounded-md w-full mt-8 text-sm font-medium cursor-pointer">
 				Register Student
 			</button>
 
 			{message && <p className="text-sm text-center text-red-600">{message}</p>}
+            {toast.message && (
+        <Toaster
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: "", type: "" })}
+        />
+      )}
 		</form>
             </div>
         </div>
