@@ -7,6 +7,7 @@ import authRoutes from "./src/backend/routes/authRoutes.js";
 import scheduleRoutes from "./src/backend/routes/scheduleRoutes.js"; // Ensure correct path
 import courseRoutes from "./src/backend/routes/courseRoutes.js";
 import userRoutes from "./src/backend/routes/userRoutes.js";
+import studentRoutes from "./src/backend/routes/studentRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ app.use(express.json());
   app.use("/api/courses", courseRoutes); 
 
   app.use("/api/users", userRoutes);     
+
+  app.use('/api/student', studentRoutes); 
 
   const PORT = process.env.PORT || 5000;
   

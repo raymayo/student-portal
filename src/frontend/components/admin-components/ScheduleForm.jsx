@@ -16,26 +16,27 @@ const fullTimeSlots = [
 const ScheduleForm = () => {
 	const [schedule, setSchedule] = useState({
 		course: '',
-		day: '',
+		day: [],
 		room: '',
 		startTime: '',
 		endTime: '',
 		teacher: null,
 	});
-	
+
 	const onScheduleAdded = async () => {
 		try {
 			// Fetch the updated schedules after adding a new one
-			const updatedScheduleResponse = await axios.get('http://localhost:5000/api/schedules');
+			const updatedScheduleResponse = await axios.get(
+				'http://localhost:5000/api/schedules'
+			);
 			setExistingSchedules(updatedScheduleResponse.data);
-	
+
 			// Optionally, show a success message
 			alert('Schedule added successfully!');
 		} catch (error) {
 			console.error('Error refreshing schedule list:', error);
 		}
 	};
-	
 
 	const [courses, setCourses] = useState([]);
 	const [existingSchedules, setExistingSchedules] = useState([]);
@@ -78,29 +79,30 @@ const ScheduleForm = () => {
 	const availableStartTimes = fullTimeSlots.filter((slot) => {
 		return !existingSchedules.some(
 			(existing) =>
-				existing.day === schedule.day &&
-				existing.room === schedule.room &&
-				((slot.startTime >= existing.startTime &&
-					slot.startTime < existing.endTime) ||
-					(slot.endTime > existing.startTime &&
-						slot.endTime <= existing.endTime))
+				existing.day.includes(schedule.day) &&  // ✅ Checks if "Tue" is inside ["Tue", "Fri"]
+				existing.room === schedule.room &&  // ✅ Matches "COMLAB 2"
+				((slot.startTime >= existing.startTime && slot.startTime < existing.endTime) ||
+					(slot.endTime > existing.startTime && slot.endTime <= existing.endTime))
 		);
 	});
+	
 
 	// **Filter available end times**
-	const availableEndTimes = fullTimeSlots.filter(
-		(slot) =>
+	const availableEndTimes = fullTimeSlots.filter((slot) => {
+		return (
 			slot.startTime > schedule.startTime &&
 			!existingSchedules.some(
 				(existing) =>
-					existing.day === schedule.day &&
+					existing.day.includes(schedule.day) && // ✅ Ensure "day" is properly checked
 					existing.room === schedule.room &&
 					((slot.startTime >= existing.startTime &&
 						slot.startTime < existing.endTime) ||
-						(slot.endTime > existing.startTime &&
-							slot.endTime <= existing.endTime))
+					 (slot.endTime > existing.startTime &&
+						slot.endTime <= existing.endTime))
 			)
-	);
+		);
+	});
+	
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -115,13 +117,14 @@ const ScheduleForm = () => {
 			// Prevent submission if the selected slot is unavailable
 			const isUnavailable = existingSchedules.some(
 				(existing) =>
-					existing.day === schedule.day &&
+					existing.day.includes(schedule.day) &&  // ✅ Fix: Check if schedule.day is inside existing.day array
 					existing.room === schedule.room &&
 					((schedule.startTime >= existing.startTime &&
 						schedule.startTime < existing.endTime) ||
-						(schedule.endTime > existing.startTime &&
-							schedule.endTime <= existing.endTime))
+					 (schedule.endTime > existing.startTime &&
+						schedule.endTime <= existing.endTime))
 			);
+			
 
 			if (isUnavailable) {
 				alert('This time slot is unavailable. Please select another time.');
@@ -135,7 +138,7 @@ const ScheduleForm = () => {
 			// Reset form
 			setSchedule({
 				course: '',
-				day: '',
+				day: [],
 				room: '',
 				startTime: '',
 				endTime: '',
@@ -156,61 +159,71 @@ const ScheduleForm = () => {
 		<form
 			onSubmit={handleSubmit}
 			className="p-6 bg-white rounded-md  w-full max-w-[700px]">
-                <div className='mb-6'>
-                    <h1 className="text-xl font-semibold">Create Schedule</h1>
-                    <p className='text-sm text-zinc-500'>Complete the Form to create a schedule</p>
-                </div>
+			<div className="mb-6">
+				<h1 className="text-xl font-semibold">Create Schedule</h1>
+				<p className="text-sm text-zinc-500">
+					Complete the Form to create a schedule
+				</p>
+			</div>
 
 			<div className="flex flex-col gap-4">
-            <label className="w-full flex flex-col gap-1">
-            <h1 className="text-sm font-medium">Course</h1>
-				{/* Course Dropdown */}
-				<select
-					name="course"
-					value={schedule.course}
-					onChange={handleChange}
-					required
-					className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md">
-					<option value="">Select Course</option>
-					{courses.map((course) => (
-						<option key={course._id} value={course._id}>
-							{course.courseId} - {course.courseName}
-						</option>
-					))}
-				</select>
-                    </label>
+				<label className="w-full flex flex-col gap-1">
+					<h1 className="text-sm font-medium">Course</h1>
+					{/* Course Dropdown */}
+					<select
+						name="course"
+						value={schedule.course}
+						onChange={handleChange}
+						required
+						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md">
+						<option value="">Select Course</option>
+						{courses.map((course) => (
+							<option key={course._id} value={course._id}>
+								{course.courseId} - {course.courseName}
+							</option>
+						))}
+					</select>
+				</label>
 				{/* Day Dropdown */}
-                <label className="w-full flex flex-col gap-1">
-                <h1 className="text-sm font-medium">Day</h1>
-				<select
-					name="day"
-					value={schedule.day}
-					onChange={handleChange}
-					required
-					className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md">
-					<option value="">Select Day</option>
+				<label className="w-full flex flex-col gap-1">
+					<h1 className="text-sm font-medium">Day</h1>
+					<div className='flex gap-2'>
 					{daysOfWeek.map((day) => (
-						<option key={day} value={day}>
+						<label key={day} className="flex items-center gap-2 border w-full p-2 rounded-md border-zinc-300 cursor-pointer">
+							<input
+								type="checkbox"
+								value={day}
+								checked={schedule.day.includes(day)}
+								onChange={(e) => {
+									const selectedDay = e.target.value;
+									const updatedDays = schedule.day.includes(selectedDay)
+										? schedule.day.filter((d) => d !== selectedDay) // Remove if already selected
+										: [...schedule.day, selectedDay]; // Add if not selected
+
+									setSchedule({ ...schedule, day: updatedDays });
+								}}
+								className="w-4 h-4"
+							/>
 							{day}
-						</option>
+						</label>
 					))}
-				</select>
-                </label>
+					</div>
+				</label>
 
 				{/* Room Input */}
-                <label className="w-full flex flex-col gap-1">
-                <h1 className="text-sm font-medium">Room</h1>
-                
-				<input
-					type="text"
-					name="room"
-					placeholder="Room"
-					value={schedule.room}
-					onChange={handleChange}
-					required
-					className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
-				/>
-                </label>
+				<label className="w-full flex flex-col gap-1">
+					<h1 className="text-sm font-medium">Room</h1>
+
+					<input
+						type="text"
+						name="room"
+						placeholder="Room"
+						value={schedule.room}
+						onChange={handleChange}
+						required
+						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
+					/>
+				</label>
 
 				<div className="flex flex-row gap-4">
 					{/* Start Time Dropdown (Filtered) */}
@@ -254,7 +267,9 @@ const ScheduleForm = () => {
 				</div>
 			</div>
 
-			<button type="submit" className="bg-zinc-950 text-white px-3 py-2 rounded-md w-full mt-8 text-sm font-medium cursor-pointer">
+			<button
+				type="submit"
+				className="bg-zinc-950 text-white px-3 py-2 rounded-md w-full mt-8 text-sm font-medium cursor-pointer">
 				Add Schedule
 			</button>
 		</form>

@@ -46,7 +46,7 @@ const AdminSidebar = () => {
 	return (
 		<div className="h-screen w-72 bg-zinc-100/50 text-zinc-950 p-4 border-r border-zinc-300">
 			<h2 className="text-xl font-semibold mb-4 flex gap-2 items-center">
-				<span className="border p-1.5 rounded-lg bg-zinc-950">
+				<span className="border p-1.5 rounded-lg bg-zinc-900">
 					<GraduationCap className="text-zinc-100" size={25} />
 				</span>
 				Acadex

@@ -11,6 +11,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 	const [schedules, setSchedules] = useState([]); // Available schedules for selected course
 	const [selectedSchedules, setSelectedSchedules] = useState([]); // Selected schedules to assign
 	const [loadingSchedules, setLoadingSchedules] = useState(false); // Loading state for schedules
+	const [studentSchedules, setStudentSchedule] = useState([])
 
 	// Fetch courses when modal opens
 	useEffect(() => {
@@ -29,6 +30,26 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 
 		fetchCourses();
 	}, [student]); // Re-fetch courses if the student changes
+
+
+	useEffect(() => {
+		const fetchStudentSched = async () => {
+			if(!student) return;
+
+			try{
+
+				const response = await axios.get(`http://localhost:5000/api/student/schedule/${student._id}`)
+				setStudentSchedule(response.data)
+
+				
+			}catch(err){
+					console.error('Error fetching student sched:', error);
+			}
+		}
+
+		fetchStudentSched();
+	}, [])
+	console.log(studentSchedules)
 
 	// Handle course selection and fetch schedules
 	const handleCourseChange = async (event) => {
@@ -80,8 +101,8 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 	};
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-			<div className="bg-white p-6 rounded-md w-[500px] shadow-lg">
+		<div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
+			<div className="bg-white p-6 rounded-md max-w-[1000px] w-full shadow-lg">
 				<h2 className="text-xl font-bold mb-4">
 					Assign Schedules to {student.name}
 				</h2>
@@ -139,6 +160,32 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 							No schedules available for this course.
 						</p>
 					)}
+				</div>
+
+				{/* STUDENT SCHEDULE */}
+				<div className='border border-zinc-200 rounded-md h-fit'>
+					<table className='w-full h-full text-left'>
+						<thead>
+							<tr>
+								<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Course ID</th>
+								<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Course</th>
+								<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Day</th>
+								<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Room</th>
+								<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Time</th>
+							</tr>
+						</thead>
+						<tbody>
+							{studentSchedules.map((sched, index) => (
+								<tr key={index}>
+									<td className='border-t border-zinc-200 px-4 py-3 text-left text-sm'> {sched.course.courseId}</td>
+									<td className='border-t border-zinc-200 px-4 py-3 text-left text-sm'> {sched.course.courseName}</td>
+									<td className='border-t border-zinc-200 px-4 py-3 text-left text-sm'> {sched.day}</td>
+									<td className='border-t border-zinc-200 px-4 py-3 text-left text-sm'> {sched.room}</td>
+									<td className='border-t border-zinc-200 px-4 py-3 text-left text-sm'> {sched.startTime}-{sched.endTime}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 
 				{/* Action Buttons */}
