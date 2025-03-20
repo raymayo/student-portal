@@ -129,18 +129,19 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
-			<div className="bg-white p-6 rounded-md max-w-[1000px] w-full shadow-lg h-full max-h-[800px] flex flex-col justify-between">
-				<div className="flex flex-col gap-4 h-full">
-					<h2 className="text-xl font-bold mb-4">
-					{student.name} Schedule
-					</h2>
-					<div className="flex flex-col gap-2">
-						<label className="block text-sm font-medium text-gray-700">
+			<div className="bg-white p-6 rounded-md max-w-[1500px] w-full shadow-lg h-full max-h-[800px] flex flex-col justify-between">
+				<div className="grid grid-cols-5 gap-4 h-full">
+					<div className="flex flex-col gap-2 w-full h-full overflow-y-auto border border-zinc-300 rounded-md p-4 col-span-2">
+						<div className="border-b border-zinc-200 pb-2 mb-2">
+							<h2 className="text-sm">{student.name}'s</h2>
+							<h2 className="font-semibold text-xl">Schedule Assignment</h2>
+						</div>
+						<label className="block text-sm font-medium text-zinc-950">
 							Select Course
 							<select
 								onChange={handleCourseChange}
 								value={selectedCourse || ''}
-								className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md mt-1">
+								className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md mt-1 cursor-pointer">
 								<option value="" disabled>
 									Select a course
 								</option>
@@ -152,100 +153,108 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 							</select>
 						</label>
 
-						<div className="max-h-96 w-full h-full overflow-y-auto border border-zinc-300 rounded-md p-3">
-							{loadingSchedules ? (
-								<p className="text-gray-500 text-sm">Loading schedules...</p>
-							) : schedules.length > 0 ? (
-								<ul className="space-y-2">
-									{schedules.map((schedule) => (
+						<div className="mt-4">
+							<ul className="space-y-2">
+								{schedules.map((schedule) => {
+									const isSelected = selectedSchedules.includes(schedule._id);
+									return (
 										<li
 											key={schedule._id}
-											className="border-b pb-2 flex items-center gap-3">
+											className={`border flex items-center gap-3 p-4 cursor-pointer rounded-lg transition-all duration-200 ease-out shadow-2xs ${
+												isSelected ? 'border-zinc-200 bg-primary' : 'border-zinc-200'
+											}`}
+											onClick={() => {
+												if (!student.currentSubjects.includes(schedule._id)) {
+													handleSelectSchedule(schedule._id);
+												}
+											}}>
 											<input
 												type="checkbox"
 												disabled={student.currentSubjects.includes(
 													schedule._id
-												)} // Disable if already assigned
-												checked={selectedSchedules.includes(schedule._id)}
-												onChange={() => handleSelectSchedule(schedule._id)}
-												className="disabled:opacity-50"
+												)}
+												checked={isSelected}
+												onChange={(e) => {
+													e.stopPropagation(); // Prevents the li click event from firing when clicking the checkbox
+													handleSelectSchedule(schedule._id);
+												}}
+												className="hidden" // Hides the checkbox
 											/>
 											<div>
 												<p className="font-semibold">
 													{schedule.course?.courseId || 'N/A'}{' '}
 													{schedule.course?.courseName || 'N/A'}
 												</p>
-												<p className="text-sm text-gray-600">
-												{schedule.day.join("-")} {formatTime(schedule.startTime)} -{' '}
+												<p className="text-sm">
+													{schedule.day.join('-')}{' '}
+													{formatTime(schedule.startTime)} -{' '}
 													{formatTime(schedule.endTime)}
 												</p>
 											</div>
 										</li>
-									))}
-								</ul>
-							) : (
-								<p className="text-gray-500 text-sm text-center">
-									No schedules available for this course.
-								</p>
-							)}
+									);
+								})}
+							</ul>
 						</div>
 					</div>
 
-
-
-					<div className="border border-zinc-200 rounded-md h-full max-h-fit mt-4">
-						<table className="w-full h-full text-left">
-							<thead>
-								<tr>
-									<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-										Course ID
-									</th>
-									<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-										Course
-									</th>
-									<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-										Day
-									</th>
-									<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-										Room
-									</th>
-									<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-										Time
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{studentSchedules.length > 0 ? (
-									studentSchedules.map((sched, index) => (
-										<tr key={index}>
-											<td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
-												{sched.course.courseId}
-											</td>
-											<td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
-												{sched.course.courseName}
-											</td>
-											<td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
-												{sched.day}
-											</td>
-											<td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
-												{sched.room}
-											</td>
-											<td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
-												{sched.startTime}-{sched.endTime}
+					<div className="col-span-3">
+						{/* <h2 className="text-sm">{student.name}'s</h2>
+					<h2 className="font-bold text-xl">Schedule Table</h2> */}
+						<div className="border border-zinc-200 rounded-md h-full w-full ">
+							<table className="w-full h-fit text-left">
+								<thead>
+									<tr>
+										<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+											Course ID
+										</th>
+										<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+											Course
+										</th>
+										<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+											Day
+										</th>
+										<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+											Room
+										</th>
+										<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+											Time
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{studentSchedules.length > 0 ? (
+										studentSchedules.map((sched, index) => (
+											<tr key={index}>
+												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+													{sched.course.courseId}
+												</td>
+												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+													{sched.course.courseName}
+												</td>
+												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+													{sched.day}
+												</td>
+												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+													{sched.room}
+												</td>
+												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+													{formatTime(sched.startTime)}-{formatTime(sched.endTime)}
+												</td>
+											</tr>
+										))
+									) : (
+										<tr>
+											<td
+												colSpan="5"
+												className="border-t border-zinc-200 px-4 py-3 text-center text-sm text-gray-500">
+												No schedules found.
 											</td>
 										</tr>
-									))
-								) : (
-									<tr>
-										<td
-											colSpan="5"
-											className="border-t border-zinc-200 px-4 py-3 text-center text-sm text-gray-500">
-											No schedules found.
-										</td>
-									</tr>
-								)}
-							</tbody>
-						</table>
+									)}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 
@@ -253,13 +262,13 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 				<div className="flex justify-end mt-4 gap-2">
 					<button
 						onClick={onClose}
-						className="px-4 py-2 bg-gray-300 rounded-md text-sm">
+						className="px-4 py-2 bg-gray-300 rounded-md text-sm cursor-pointer">
 						Cancel
 					</button>
 					<button
 						onClick={handleAssignSchedules}
 						disabled={selectedSchedules.length === 0 || schedules.length === 0}
-						className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm disabled:opacity-50">
+						className="bg-zinc-950 text-zinc-100 px-3 py-2 rounded-md w-fit text-sm font-medium cursor-pointer">
 						Assign Schedules
 					</button>
 				</div>
