@@ -13,12 +13,14 @@
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
+  letter-spacing: -.5px
 }
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

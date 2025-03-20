@@ -24,11 +24,7 @@ export const getScheduleOfStudent = async (req, res) => {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        if (!student.currentSubjects.length) {
-            return res.status(404).json({ message: 'No schedules found for this student' });
-        }
-
-        res.status(200).json(student.currentSubjects);
+        res.status(200).json(student.currentSubjects.length ? student.currentSubjects : []);
     } catch (error) {
         console.error('Error fetching schedule:', error);
         res.status(500).json({ message: 'Server error' });

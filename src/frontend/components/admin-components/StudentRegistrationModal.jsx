@@ -222,7 +222,7 @@ const StudentRegistrationModal = ({ isOpen, onClose }) => {
 				Register Student
 			</button>
 
-			{message && <p className="text-sm text-center text-red-600">{message}</p>}
+			
             {toast.message && (
         <Toaster
           message={toast.message}

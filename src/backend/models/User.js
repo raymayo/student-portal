@@ -22,15 +22,21 @@ const userSchema = new mongoose.Schema(
         birthday: { type: Date },
         gender: { type: String, enum: ["Male", "Female", "Other"] },
         address: { type: String },
+        department: { type: String }, // Auto-filled for students based on areaOfStudy
 
         // STUDENT ONLY
         currentSubjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule", default: [] }],
         studentId: { type: String, unique: true, sparse: true }, // Only for students
-        yearLevel: { type: String, required: true, enum: ["1", "2", "3", "4"] },
+        yearLevel: { 
+            type: String, 
+            enum: ["1", "2", "3", "4"],
+            required: function () {
+                return this.role === "student";  // ✅ Only required for students
+            }
+        },
         areaOfStudy: { type: String },
 
         // TEACHER ONLY
-        department: { type: String }, // Auto-filled for students based on areaOfStudy
         specialization: { type: String },
         teachingSchedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule", default: [] }], // Default empty array
         teacherId: { type: String, unique: true, sparse: true }, // Only for teachers

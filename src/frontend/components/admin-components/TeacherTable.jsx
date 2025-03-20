@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from "react";
 import { Plus } from 'lucide-react';
 import useFetch from '../../custom-hooks/useFetch.js';
-
+import TeacherRegistrationModal from "./TeacherRegistrationModal";
+import Tooltip from "../Tooltip.jsx";
 
 
 const TeacherTable = () => {
 
+const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
 
 
@@ -15,10 +17,13 @@ const TeacherTable = () => {
     if (error) return <p>Error: {error.message}</p>;
 
 
+    
+
+
 
   return (
     <div className='w-full max-w-[1000px] flex flex-col gap-4 h-full'>
-       <button className='self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2'><Plus size={16}/>Register</button>
+       <button className='self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2' onClick={() => setRegisterModalOpen(true)}><Plus size={16}/>Register</button>
     <div className='border border-zinc-200 rounded-md h-fit'>
         <table className='w-full h-full '>
             <thead>
@@ -55,6 +60,8 @@ const TeacherTable = () => {
 
         </table>
     </div>
+
+                <TeacherRegistrationModal isOpen={isRegisterModalOpen} onClose={() => setRegisterModalOpen(false)} />
     </div>
   )
 }

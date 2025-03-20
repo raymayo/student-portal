@@ -44,6 +44,7 @@ export const register = async (req, res) => {
             userData.specialization = specialization;
         }
         // Admins should not have studentId or teacherId
+        console.log("Incoming Request:", req.body);
 
         // Create new user
         const newUser = new User(userData);

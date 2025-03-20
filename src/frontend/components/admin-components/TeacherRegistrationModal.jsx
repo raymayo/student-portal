@@ -1,20 +1,26 @@
 import { useState } from "react";
 import axios from "axios";
+import Toaster from "../Toaster";
+import { X } from 'lucide-react';
 
 const API_URL = "http://localhost:5000/api/auth"; // Replace with your actual API URL
 
 const registerUser = async (userData) => {
     try {
         const response = await axios.post(`${API_URL}/register`, userData);
-        console.log(response.data)
         return response.data;
-        
     } catch (error) {
         return { error: error.response?.data?.message || "Registration failed" };
     }
 };
 
-const TeacherRegistration = () => {
+const TeacherRegistrationModal = ({ isOpen, onClose }) => {
+
+    const [toast, setToast] = useState({ message: "", type: "" });
+    const showToast = (message, type) => {
+        setToast({ message, type });
+      };
+
     const [teacher, setTeacher] = useState({
         teacherId: "",
         name: "",
@@ -30,6 +36,8 @@ const TeacherRegistration = () => {
     });
 
     const [message, setMessage] = useState("");
+
+    if (!isOpen) return null; // Don't render if modal is closed
 
     const handleChange = (e) => {
         setTeacher({ ...teacher, [e.target.name]: e.target.value });
@@ -61,14 +69,26 @@ const TeacherRegistration = () => {
     };
 
     return (
+        <div className="fixed inset-0 bg-zinc-950/75 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-md w-full max-w-2xl">
+            <div className="flex justify-between items-start pl-6">
+                <div className="flex flex-col">
+                <h1 className="text-xl font-semibold">Teacher Registration</h1>
+                <p className="text-sm text-zinc-500">
+                Complete the Form to register teacher
+            </p>
+            </div>
+                <button onClick={onClose} className="text-zinc-500 hover:text-zinc-900 cursor-pointer"><X size={16}/></button>
+            </div>
+
         <form
             className="p-6 bg-white rounded-md w-full max-w-[800px] flex flex-col gap-4"
             onSubmit={handleSubmit}
         >
-             <div className='mb-6'>
+             {/* <div className='mb-6'>
                     <h1 className="text-xl font-semibold">Teacher Registration</h1>
                     <p className='text-sm text-zinc-500'>Complete the Form to register teacher</p>
-                </div>
+                </div> */}
             <div className="flex gap-2">
                 <label className="w-full flex flex-col gap-1 max-w-[150px]">
                     <h1 className="text-sm font-medium">Teacher Id</h1>
@@ -167,10 +187,10 @@ const TeacherRegistration = () => {
                     	className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
 					required>
                     <option value="">Department</option>
-					<option value="Hackers">Hackers</option>
-					<option value="Executives">Executives</option>
-					<option value="Hoteliers">Hoteliers</option>
-					<option value="Headmasters">Headmasters</option>
+					<option value="Computer Science">Hackers</option>
+					<option value="Business Education">Executives</option>
+					<option value="Hospitality Management">Hoteliers</option>
+					<option value="Teacher Education">Headmasters</option>
 				</select>
                 </label>
                 <label className="w-full flex flex-col gap-1">
@@ -191,9 +211,15 @@ const TeacherRegistration = () => {
                 Create Teacher
             </button>
 
-            {message && <p className="text-sm text-center text-red-600">{message}</p>}
+            <Toaster
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: "", type: "" })}
+        />
         </form>
+        </div>
+        </div>
     );
 };
 
-export default TeacherRegistration;
+export default TeacherRegistrationModal;
