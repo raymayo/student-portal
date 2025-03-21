@@ -4,10 +4,11 @@ import dotenv from  'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import authRoutes from "./src/backend/routes/authRoutes.js";
-import scheduleRoutes from "./src/backend/routes/scheduleRoutes.js"; // Ensure correct path
+import scheduleRoutes from "./src/backend/routes/scheduleRoutes.js";
 import courseRoutes from "./src/backend/routes/courseRoutes.js";
 import userRoutes from "./src/backend/routes/userRoutes.js";
 import studentRoutes from "./src/backend/routes/studentRoutes.js";
+import gradeRoutes from "./src/backend/routes/gradeRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(express.json());
   app.use("/api/users", userRoutes);     
 
   app.use('/api/student', studentRoutes); 
+  app.use('/api/grades', gradeRoutes); 
 
   const PORT = process.env.PORT || 5000;
   

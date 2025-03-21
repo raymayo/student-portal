@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import useFormatTime from '../../custom-hooks/useFormatTime.js';
 import axios from 'axios';
+import { createGrade } from '../../services/gradeService.js';
 
 const ScheduleModal = ({ isOpen, onClose, student }) => {
 	if (!isOpen || !student) return null;
@@ -110,23 +111,29 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 	// Assign schedules to student
 	const handleAssignSchedules = async () => {
 		if (selectedSchedules.length === 0) return;
-
+	
 		try {
-			console.log('Selected Schedules:', selectedSchedules);
-
+			console.log("Selected Schedules:", selectedSchedules);
+	
+			// Assign schedules to student
 			const response = await axios.post(
-				`http://localhost:5000/api/students/${student._id}/assign-schedules`,
+				`http://localhost:5000/api/schedules/${student._id}/assign-schedules`,
 				{ scheduleIds: selectedSchedules.map((id) => id.toString()) }
 			);
-
+	
+			// Create grade documents for each assigned schedule
+			for (const scheduleId of selectedSchedules) {
+				await createGrade(student._id, scheduleId);
+			}
+	
 			alert(response.data.message); // ✅ Show success message
 			onClose(); // Close modal after assigning schedules
 		} catch (error) {
-			console.error('Error assigning schedules:', error);
-			alert(error.response?.data?.message || 'Failed to assign schedules.');
+			console.error("Error assigning schedules:", error);
+			alert(error.response?.data?.message || "Failed to assign schedules.");
 		}
 	};
-
+	
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
 			<div className="bg-white p-6 rounded-md max-w-[1500px] w-full shadow-lg h-full max-h-[800px] flex flex-col justify-between">
@@ -161,7 +168,9 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 										<li
 											key={schedule._id}
 											className={`border flex items-center gap-3 p-4 cursor-pointer rounded-lg transition-all duration-200 ease-out shadow-2xs ${
-												isSelected ? 'outline outline-primary border-primary' : 'border-zinc-200'
+												isSelected
+													? 'outline outline-primary border-primary'
+													: 'border-zinc-200'
 											}`}
 											onClick={() => {
 												if (!student.currentSubjects.includes(schedule._id)) {
@@ -239,7 +248,8 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 													{sched.room}
 												</td>
 												<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-													{formatTime(sched.startTime)}-{formatTime(sched.endTime)}
+													{formatTime(sched.startTime)}-
+													{formatTime(sched.endTime)}
 												</td>
 											</tr>
 										))

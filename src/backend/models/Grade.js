@@ -6,9 +6,9 @@ const gradeSchema = new mongoose.Schema({
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // Teacher's ID (nullable)
     
     termGrades: {
-        prelim: { type: Number, min: 0, max: 4.0, default: null },  // GPA for Prelim
-        midterm: { type: Number, min: 0, max: 4.0, default: null }, // GPA for Midterm
-        finals: { type: Number, min: 0, max: 4.0, default: null }   // GPA for Finals
+        prelim: { type: Number, min: 0, max: 100, default: null },  // GPA for Prelim
+        midterm: { type: Number, min: 0, max: 100, default: null }, // GPA for Midterm
+        finals: { type: Number, min: 0, max: 100, default: null }   // GPA for Finals
     },
 
     createdAt: { type: Date, default: Date.now }

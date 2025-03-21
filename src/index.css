@@ -48,5 +48,5 @@
 }
 
 #image-holder{
-  background: url('../public/UI/asset2.svg');
+  background: url('/public/UI/asset2.svg');
 }
