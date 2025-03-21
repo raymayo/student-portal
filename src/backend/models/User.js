@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema(
             }
         },
         areaOfStudy: { type: String },
+        grades: [{ type: mongoose.Schema.Types.ObjectId, ref: "Grade", default: [] }],
 
         // TEACHER ONLY
         specialization: { type: String },
