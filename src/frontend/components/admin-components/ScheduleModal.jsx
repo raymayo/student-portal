@@ -199,6 +199,9 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 													{formatTime(schedule.startTime)} -{' '}
 													{formatTime(schedule.endTime)}
 												</p>
+												<p>
+													{schedule.teacher?.name || 'NO TEACHER'}
+												</p>
 											</div>
 										</li>
 									);
