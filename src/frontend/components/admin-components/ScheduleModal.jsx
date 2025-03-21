@@ -161,7 +161,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 										<li
 											key={schedule._id}
 											className={`border flex items-center gap-3 p-4 cursor-pointer rounded-lg transition-all duration-200 ease-out shadow-2xs ${
-												isSelected ? 'border-zinc-200 bg-primary' : 'border-zinc-200'
+												isSelected ? 'outline outline-primary border-primary' : 'border-zinc-200'
 											}`}
 											onClick={() => {
 												if (!student.currentSubjects.includes(schedule._id)) {
