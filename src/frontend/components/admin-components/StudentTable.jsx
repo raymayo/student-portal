@@ -1,101 +1,143 @@
-import React, { useState } from "react";
-import { Plus,  CalendarPlus } from "lucide-react";
-import useFetch from "../../custom-hooks/useFetch.js";
-import axios from "axios";
-import ScheduleModal from "./ScheduleModal.jsx"; // ✅ Importing the modal
-import StudentRegistrationModal from "./StudentRegistrationModal";
+import React, { useState } from 'react';
+import { Plus, CalendarPlus } from 'lucide-react';
+import useFetch from '../../custom-hooks/useFetch.js';
+import axios from 'axios';
+import ScheduleModal from './ScheduleModal.jsx'; // ✅ Importing the modal
+import StudentRegistrationModal from './StudentRegistrationModal';
 
-import Tooltip from "../Tooltip.jsx";
+import Tooltip from '../Tooltip.jsx';
 
 const StudentTable = () => {
-    const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
-    const { data: students, loading, error } = useFetch("http://localhost:5000/api/users?role=student");
+	const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+	const {
+		data: students,
+		loading,
+		error,
+	} = useFetch('http://localhost:5000/api/users?role=student');
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [schedules, setSchedules] = useState([]);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [selectedStudent, setSelectedStudent] = useState(null);
+	const [schedules, setSchedules] = useState([]);
 
-    // Open modal and fetch schedules based on student details
-    const openModal = async (student) => {
-        setSelectedStudent(student);
-        setIsModalOpen(true);
+	// Open modal and fetch schedules based on student details
+	const openModal = async (student) => {
+		setSelectedStudent(student);
+		setIsModalOpen(true);
 
-        try {
-            const yearLevel = encodeURIComponent(String(student.yearLevel).trim());
-            let areaOfStudy = student.areaOfStudy.trim();
+		try {
+			const yearLevel = encodeURIComponent(String(student.yearLevel).trim());
+			let areaOfStudy = student.areaOfStudy.trim();
 
-            // Fetch schedules based on student's yearLevel & department
-            const response = await axios.get(
-                `http://localhost:5000/api/schedules?yearLevel=${yearLevel}&areaOfStudy=${areaOfStudy}`
-            );
+			// Fetch schedules based on student's yearLevel & department
+			const response = await axios.get(
+				`http://localhost:5000/api/schedules?yearLevel=${yearLevel}&areaOfStudy=${areaOfStudy}`
+			);
 
-            setSchedules(response.data);
-        } catch (err) {
-            console.error("Error fetching schedules:", err);
-        }
-    };
+			setSchedules(response.data);
+		} catch (err) {
+			console.error('Error fetching schedules:', err);
+		}
+	};
 
-    // Close modal
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setSelectedStudent(null);
-        setSchedules([]);
-    };
+	// Close modal
+	const closeModal = () => {
+		setIsModalOpen(false);
+		setSelectedStudent(null);
+		setSchedules([]);
+	};
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error: {error.message}</p>;
 
-    return (
-        <div className="w-full max-w-[1000px] flex flex-col gap-4 h-full">
-            <button className="self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2"  onClick={() => setRegisterModalOpen(true)}>
-                <Plus size={16} />
-                Register
-            </button>
-            <div className="border border-zinc-300 rounded-md h-fit">
-                <table className="w-full h-full">
-                    <thead>
-                        <tr>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">#</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">ID</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Name</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Email</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Course</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Year Level</th>
-                            <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.map((student, index) => (
-                            <tr key={index}>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{index + 1}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{student.studentId}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{student.name}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{student.email}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{student.areaOfStudy}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">{student.yearLevel}</td>
-                                <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm w-fit">
-                                    <div className="flex gap-2">
-                                    <Tooltip text="Assign Schedule" position="top">
-                                        <button onClick={() => openModal(student)} className="border border-zinc-300 rounded-md cursor-pointer p-2 hover:bg-zinc-100 transition-all duration-200 shadow-2xs" >
-                                        <CalendarPlus size={16} className="text-zinc-900"/>
-                                        </button>
-                                        </Tooltip>
-                                        {/* <button className="border border-zinc-300 rounded-md cursor-pointer">E</button>
+	return (
+		<div className="w-full max-w-[1000px] flex flex-col gap-4 h-full">
+			<button
+				className="self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2"
+				onClick={() => setRegisterModalOpen(true)}>
+				<Plus size={16} />
+				Register
+			</button>
+			<div className="border border-zinc-300 rounded-md h-fit">
+				<table className="w-full h-full">
+					<thead>
+						<tr>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								#
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								ID
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Name
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Email
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Course
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Year Level
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Actions
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{students.map((student, index) => (
+							<tr key={index}>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{index + 1}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{student.studentId}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{student.name}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{student.email}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{student.areaOfStudy}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
+									{student.yearLevel}
+								</td>
+								<td className="border-t border-zinc-300 px-4 py-3 text-left text-sm w-fit">
+									<div className="flex gap-2">
+										<Tooltip text="Assign Schedule" position="top">
+											
+                                            <button
+												onClick={() => openModal(student)}
+												className="border border-zinc-300 rounded-md cursor-pointer p-2 hover:bg-zinc-100 transition-all duration-200 shadow-2xs">
+												<CalendarPlus size={16} className="text-zinc-900" />
+											</button>
+										</Tooltip>
+										{/* <button className="border border-zinc-300 rounded-md cursor-pointer">E</button>
                                         <button className="border border-zinc-300 rounded-md cursor-pointer">D</button> */}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+									</div>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 
-            {/* Modal Component */}
-            <ScheduleModal isOpen={isModalOpen} onClose={closeModal} student={selectedStudent} schedules={schedules} />
-            <StudentRegistrationModal isOpen={isRegisterModalOpen} onClose={() => setRegisterModalOpen(false)} />
-
-        </div>
-    );
+			{/* Modal Component */}
+			<ScheduleModal
+				isOpen={isModalOpen}
+				onClose={closeModal}
+				student={selectedStudent}
+				schedules={schedules}
+			/>
+			<StudentRegistrationModal
+				isOpen={isRegisterModalOpen}
+				onClose={() => setRegisterModalOpen(false)}
+			/>
+		</div>
+	);
 };
 
 export default StudentTable;

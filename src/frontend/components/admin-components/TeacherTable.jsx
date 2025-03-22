@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus } from 'lucide-react';
+import { Plus, CalendarPlus } from 'lucide-react';
 import useFetch from '../../custom-hooks/useFetch.js';
 import TeacherRegistrationModal from "./TeacherRegistrationModal";
 import AssignTeacherModal from "./AssignTeacherModal.jsx";
@@ -62,9 +62,11 @@ const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
                             <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">{teacher.specialization}</td>
                             <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
                                 <div className='flex gap-2'>
-                                <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer' onClick={() => openModal(teacher)}>V</button>
-                                <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>E</button>
-                                <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>D</button>
+                                    <Tooltip text="Assign Schedule" position="top">
+                                <button className="border border-zinc-300 rounded-md cursor-pointer p-2 hover:bg-zinc-100 transition-all duration-200 shadow-2xs" onClick={() => openModal(teacher)}><CalendarPlus size={16} className="text-zinc-900" /></button>
+                                </Tooltip>
+                                {/* <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>E</button>
+                                <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>D</button> */}
                                 </div>
                             </td>
                         </tr>

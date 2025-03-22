@@ -75,7 +75,11 @@ const AssignTeacherModal = ({ isOpen, onClose, teacher }) => {
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">
 			<div className="bg-white p-6 rounded-md max-w-[1500px] w-full shadow-lg h-full max-h-[800px] flex flex-col justify-between">
-				<form>
+				<form className='flex flex-col gap-4'>
+                <label className="w-full flex flex-col gap-1">
+						<h1 className="text-sm font-medium">Department</h1>
+                        <input className='block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200' type="text" value={teacher.department} disabled />
+					</label>
 					<label className="w-full flex flex-col gap-1">
 						<h1 className="text-sm font-medium">Area Of Study</h1>
 
