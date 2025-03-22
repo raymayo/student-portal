@@ -38,12 +38,13 @@ export const createCourse = async (req, res) => {
 
 export const getCourses = async (req, res) => {
     try {
-        const { yearLevel, areaOfStudy } = req.query;
+        const { yearLevel, areaOfStudy, department } = req.query;
 
         // Build query object based on provided filters
         const query = {};
         if (yearLevel) query.yearLevel = yearLevel;
         if (areaOfStudy) query.areaOfStudy = areaOfStudy;
+        if (department) query.department = department;
 
         // Fetch courses from the database
         const courses = await Course.find(query);

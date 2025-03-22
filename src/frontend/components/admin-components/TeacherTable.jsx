@@ -49,7 +49,7 @@ const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
                             <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">{teacher.specialization}</td>
                             <td className="border-t border-zinc-300 px-4 py-3 text-left text-sm">
                                 <div className='flex gap-2'>
-                            <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>V</button>
+                                <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer' onClick={() => openModal(teacher)}>V</button>
                                 <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>E</button>
                                 <button className='border border-zinc-300 rounded-md w-8 h-8 cursor-pointer'>D</button>
                                 </div>
