@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import useFormatTime from '../../custom-hooks/useFormatTime.js';
 import axios from 'axios';
-import { createGrade } from '../../services/gradeService.js';
+// import { createGrade } from '../../services/gradeService.js';
 
 const ScheduleModal = ({ isOpen, onClose, student }) => {
 	if (!isOpen || !student) return null;
@@ -123,7 +123,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 	
 			// Create grade documents for each assigned schedule
 			for (const scheduleId of selectedSchedules) {
-				await createGrade(student._id, scheduleId);
+				await axios.post(`http://localhost:5000/api/grades/${student._id}/${scheduleId}`);
 			}
 	
 			alert(response.data.message); // ✅ Show success message
@@ -133,6 +133,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 			alert(error.response?.data?.message || "Failed to assign schedules.");
 		}
 	};
+	
 	
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/75 z-50">

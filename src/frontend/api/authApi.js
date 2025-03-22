@@ -20,7 +20,8 @@ export const loginUser = async (formData) => {
             headers: { "Content-Type": "application/json" }
         });
 
-        // Save token and role in localStorage
+        console.log("API Response:", response.data); // ✅ Debug full API response
+
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
 
@@ -29,6 +30,7 @@ export const loginUser = async (formData) => {
         return { error: error.response?.data?.message || "Login failed" };
     }
 };
+
 
 // Get User Profile
 export const getUserProfile = async (token) => {
