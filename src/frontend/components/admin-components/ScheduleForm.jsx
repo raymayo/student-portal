@@ -202,7 +202,7 @@ const ScheduleForm = () => {
 						name="department"
 						value={schedule.department}
 						onChange={handleChange}
-						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
+						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer"
 						required>
 						<option value="">Department</option>
 						<option value="Computer Science">Hackers</option>
@@ -218,8 +218,9 @@ const ScheduleForm = () => {
 						name="areaOfStudy"
 						value={areaOfStudy}
 						onChange={(e) => setAreaOfStudy(e.target.value)} 
-						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
-						required>
+						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
+						required
+						disabled={!schedule.department}>
 						<option value="" disabled>
 							Select Course
 						</option>
@@ -240,7 +241,8 @@ const ScheduleForm = () => {
                         name="yearLevel"
                         value={schedule.yearLevel}
 						onChange={handleChange}
-						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
+						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
+						disabled={!areaOfStudy}
 						required>
 						<option value="">Select Year Level</option>
 						<option value="1">1st Year</option>
