@@ -206,7 +206,7 @@ const TeacherRegistrationModal = ({ isOpen, onClose }) => {
             </div>
             <button
                 type="submit"
-                className="bg-zinc-900 text-white px-3 py-2 rounded-md w-full mt-8 text-sm font-medium cursor-pointer"
+                className="bg-primary text-zinc-950 px-3 py-2 rounded-md w-full mt-8 text-sm font-semibold cursor-pointer"
             >
                 Create Teacher
             </button>

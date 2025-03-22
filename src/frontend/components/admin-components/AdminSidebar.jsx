@@ -44,15 +44,15 @@ const DropdownMenu = ({ title, icon: Icon, children }) => {
 
 const AdminSidebar = () => {
 	return (
-		<div className="h-screen w-72 bg-zinc-100/50 text-zinc-950 p-4 border-r border-zinc-300">
-			<h2 className="text-xl font-semibold mb-4 flex gap-2 items-center">
-				<span className="border p-1.5 rounded-lg bg-zinc-900">
-					<GraduationCap className="text-zinc-100" size={25} />
+		<div className="h-screen w-72 bg-white text-zinc-950 border-r border-zinc-300">
+			<h2 className="text-lg font-semibold flex gap-2 items-center px-4 py-4 border-b border-zinc-200">
+				<span className="p-1.5 rounded-lg bg-primary">
+					<GraduationCap className="text-zinc-950" size={25} />
 				</span>
-				Acadex
+				Academic Portal
 			</h2>
 
-			<nav className="flex flex-col gap-2">
+			<nav className="flex flex-col gap-2 p-4">
 				<NavLink
 					to="/admin/dashboard"
 					className={({ isActive }) =>
@@ -65,11 +65,11 @@ const AdminSidebar = () => {
 
 				{/* Teachers Dropdown */}
 				<DropdownMenu title="Teachers" icon={Users}>
-					<NavLink
+					{/* <NavLink
 						to="/admin/teachers"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
 						Create Teachers
-					</NavLink>
+					</NavLink> */}
 					<NavLink
 						to="/admin/teacher-table"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
@@ -79,11 +79,11 @@ const AdminSidebar = () => {
 
 				{/* Students Dropdown */}
 				<DropdownMenu title="Students" icon={GraduationCap}>
-					<NavLink
+					{/* <NavLink
 						to="/admin/student"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
 						Create Student
-					</NavLink>
+					</NavLink> */}
 					<NavLink
 						to="/admin/student-table"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
@@ -116,6 +116,14 @@ const AdminSidebar = () => {
 						to="/admin/schedules"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
 						Create Schedule
+					</NavLink>
+				</DropdownMenu>
+
+				<DropdownMenu title="Grades" icon={BookOpen}>
+				<NavLink
+						to="/admin/grades"
+						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
+						Student Grades
 					</NavLink>
 				</DropdownMenu>
 			</nav>

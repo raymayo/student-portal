@@ -36,8 +36,8 @@ const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
   return (
     <div className='w-full max-w-[1000px] flex flex-col gap-4 h-full'>
-       <button className='self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2' onClick={() => setRegisterModalOpen(true)}><Plus size={16}/>Register</button>
-    <div className='border border-zinc-200 rounded-md h-fit'>
+       <button className='bg-white self-end border border-zinc-300 text-xs font-medium cursor-pointer px-3 py-2 rounded-md flex items-center gap-2' onClick={() => setRegisterModalOpen(true)}><Plus size={16}/>Register</button>
+    <div className='border border-zinc-200 rounded-md h-fit bg-white'>
         <table className='w-full h-full '>
             <thead>
                 <tr>
