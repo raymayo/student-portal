@@ -148,6 +148,31 @@ export const getSchedulesByCriteria = async (req, res) => {
 };
 
 
+export const getFilteredSchedule = async (req, res) => {
+  try {
+    const { yearLevel, areaOfStudy, department } = req.query;
+
+    const query = {};
+    if (yearLevel) query.yearLevel = yearLevel;
+    if (department) query.department = decodeURIComponent(department).trim(); // Fix encoding
+    console.log("MongoDB Query:", query);
+
+    let schedules = await Schedule.find(query).populate("course").populate("teacher", "name");
+
+    console.log("Populated Schedules:", schedules);
+
+    if (areaOfStudy) {
+      schedules = schedules.filter(schedule => schedule.course?.areaOfStudy === areaOfStudy);
+    }
+
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching schedules", error: err.message });
+  }
+};
+
+
+
 
 
 
@@ -155,55 +180,59 @@ export const getSchedulesByCriteria = async (req, res) => {
 
 
 // Assign a teacher to a schedule
-export const assignTeacherToSchedule = async (req, res) => {
+export const assignTeacherToSchedules = async (req, res) => {
   try {
       console.log('Request Body:', req.body);
       console.log('Request Params:', req.params);
 
-      const { teacherId } = req.body;
-      const { id } = req.params; // Schedule ID from URL
+      const { id: teacherId } = req.params; // Get teacherId from URL params
+      const { scheduleIds } = req.body; // Expect an array of schedule IDs
 
-      if (!teacherId) {
-          return res.status(400).json({ error: 'Teacher ID is required' });
-      }
-
-      // Check if schedule exists
-      const schedule = await Schedule.findById(id);
-      if (!schedule) {
-          return res.status(404).json({ error: 'Schedule not found' });
+      if (!teacherId || !Array.isArray(scheduleIds) || scheduleIds.length === 0) {
+          return res.status(400).json({ error: 'Teacher ID and schedule IDs are required' });
       }
 
       // Check if teacher exists and has the correct role
-      const newTeacher = await User.findById(teacherId);
-      if (!newTeacher || newTeacher.role !== 'teacher') {
+      const teacher = await User.findById(teacherId);
+      if (!teacher || teacher.role !== 'teacher') {
           return res.status(400).json({ error: 'Invalid teacher selected' });
       }
 
-      // If schedule already has a teacher, remove it from the old teacher's `teachingSchedules`
-      if (schedule.teacher) {
-          const oldTeacher = await User.findById(schedule.teacher);
-          if (oldTeacher) {
-              oldTeacher.teachingSchedules = oldTeacher.teachingSchedules.filter(schedId => schedId.toString() !== id);
-              await oldTeacher.save();
+      // Fetch all schedules that match the given IDs
+      const schedules = await Schedule.find({ _id: { $in: scheduleIds } });
+
+      if (schedules.length === 0) {
+          return res.status(404).json({ error: 'No schedules found' });
+      }
+
+      // Remove old teacher assignments if necessary
+      for (const schedule of schedules) {
+          if (schedule.teacher) {
+              const oldTeacher = await User.findById(schedule.teacher);
+              if (oldTeacher) {
+                  oldTeacher.teachingSchedules = oldTeacher.teachingSchedules.filter(
+                      (schedId) => !scheduleIds.includes(schedId.toString())
+                  );
+                  await oldTeacher.save();
+              }
           }
+
+          // Assign new teacher
+          schedule.teacher = teacherId;
+          await schedule.save();
       }
 
-      // Assign new teacher to schedule
-      schedule.teacher = teacherId;
-      await schedule.save();
+      // ✅ Ensure teacher has all new schedules in their `teachingSchedules`
+      teacher.teachingSchedules = [...new Set([...teacher.teachingSchedules, ...scheduleIds])];
+      await teacher.save();
 
-      // ✅ Ensure new teacher has this schedule in their `teachingSchedules`
-      if (!newTeacher.teachingSchedules.includes(id)) {
-          newTeacher.teachingSchedules.push(id);
-          await newTeacher.save();
-      }
-
-      res.json({ message: 'Teacher reassigned successfully', schedule, newTeacher });
+      res.json({ message: 'Teacher assigned successfully to multiple schedules', schedules, teacher });
   } catch (error) {
       console.error('Server Error:', error);
-      res.status(500).json({ error: 'Error reassigning teacher' });
+      res.status(500).json({ error: 'Error assigning teacher' });
   }
 };
+
 
 
 

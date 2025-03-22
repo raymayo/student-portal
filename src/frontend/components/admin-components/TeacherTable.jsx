@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Plus } from 'lucide-react';
 import useFetch from '../../custom-hooks/useFetch.js';
 import TeacherRegistrationModal from "./TeacherRegistrationModal";
+import AssignTeacherModal from "./AssignTeacherModal.jsx";
 import Tooltip from "../Tooltip.jsx";
 
 
@@ -9,7 +10,8 @@ const TeacherTable = () => {
 
 const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
 
     const { data: teachers, loading, error } = useFetch("http://localhost:5000/api/users?role=teacher");
 
@@ -17,7 +19,18 @@ const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
     if (error) return <p>Error: {error.message}</p>;
 
 
-    
+    const openModal = async (teacher) => {
+        setSelectedTeacher(teacher);
+        setIsModalOpen(true);
+
+        
+    };
+
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedTeacher(null);
+    };
 
 
 
@@ -60,7 +73,7 @@ const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
         </table>
     </div>
-
+                <AssignTeacherModal isOpen={isModalOpen} onClose={closeModal} teacher={selectedTeacher} />
                 <TeacherRegistrationModal isOpen={isRegisterModalOpen} onClose={() => setRegisterModalOpen(false)} />
     </div>
   )
