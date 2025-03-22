@@ -11,7 +11,7 @@ const Login = () => {
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		role: 'student', // Default selection
-		email: 'cea@student.com',
+		email: 'jl@student.com',
 		password: 'student',
 	});
 	const [error, setError] = useState('');

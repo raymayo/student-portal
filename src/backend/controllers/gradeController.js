@@ -1,5 +1,6 @@
 import Grade from "../models/Grade.js";
-import User from "../models/User.js"; // ✅ Import User model
+import User from "../models/User.js"; 
+import Schedule from "../models/Schedule.js"; 
 import mongoose from "mongoose";
 
 export const createGrade = async (req, res) => {
@@ -12,11 +13,17 @@ export const createGrade = async (req, res) => {
             return res.status(400).json({ message: "Grade document already exists." });
         }
 
-        // Create a new grade entry
+        // ✅ Fetch the schedule to get the teacher's ID
+        const schedule = await Schedule.findById(scheduleId);
+        if (!schedule) {
+            return res.status(404).json({ message: "Schedule not found." });
+        }
+
+        // ✅ Assign the teacher from the schedule
         grade = new Grade({
             student: studentId,
             schedule: scheduleId,
-            teacher: req.user?._id || null, // Remove middleware if not needed
+            teacher: schedule.teacher, // Get teacher from schedule
             termGrades: { prelim: null, midterm: null, finals: null }
         });
 
@@ -33,6 +40,7 @@ export const createGrade = async (req, res) => {
         res.status(500).json({ message: "Failed to create grade document." });
     }
 };
+
 
 
 export const getStudentGrades = async (req, res) => {

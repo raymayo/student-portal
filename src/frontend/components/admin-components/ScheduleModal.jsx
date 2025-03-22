@@ -124,6 +124,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 			// Create grade documents for each assigned schedule
 			for (const scheduleId of selectedSchedules) {
 				await axios.post(`http://localhost:5000/api/grades/${student._id}/${scheduleId}`);
+
 			}
 	
 			alert(response.data.message); // ✅ Show success message
