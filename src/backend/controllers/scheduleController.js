@@ -27,7 +27,14 @@ export const getSchedules = async (req, res) => {
 
     const schedules = await Schedule.find(query)
       .populate("course")
-      .populate("students", "name yearLevel grades");
+      .populate({
+        path: "students",
+        select: "name yearLevel grades",
+        populate: {
+          path: "grades", // This will populate the grades field inside students
+        },
+      });
+  
 
     res.json(schedules);
   } catch (error) {
