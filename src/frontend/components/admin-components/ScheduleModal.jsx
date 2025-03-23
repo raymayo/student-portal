@@ -98,6 +98,8 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
 		}
 	};
 
+	console.log("Fetched Schedule Data:", schedules);
+
 	// Toggle schedule selection
 	const handleSelectSchedule = (scheduleId) => {
 		setSelectedSchedules(
