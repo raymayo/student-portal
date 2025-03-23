@@ -5,30 +5,34 @@ import mongoose from 'mongoose';
 
 
 export const getSchedules = async (req, res) => {
-  const { yearLevel, department, courseId } = req.query;
+  const { yearLevel, department, courseId, teacher } = req.query;
 
   try {
-      // Fetch schedules and populate the course details
-      let query = {};
+    let query = {};
 
-      if (yearLevel) {
-          query["course.yearLevel"] = yearLevel.trim();
-      }
-      if (department) {
-          query["course.department"] = department.trim().toLowerCase();
-      }
-      if (courseId) {
-          query["course._id"] = courseId;
-      }
+    if (yearLevel) {
+      query["yearLevel"] = yearLevel.trim();
+    }
+    if (department) {
+      query["department"] = department.trim().toLowerCase();
+    }
+    if (courseId) {
+      query["course"] = new mongoose.Types.ObjectId(courseId);
+    }
+    if (teacher !== undefined && teacher !== null && teacher !== "") {
+      query["teacher"] = new mongoose.Types.ObjectId(teacher);
+    } else {
+      query["teacher"] = { $ne: null, $exists: true };
+    }
 
-      const schedules = await Schedule.find(query)
-          .populate("course")
-          .populate("teacher", "name email")
-          .populate("students", "name email");
+    const schedules = await Schedule.find(query)
+      .populate("course")
+      // .populate("teacher")
+      .populate("students", "name");
 
-      res.json(schedules);
+    res.json(schedules);
   } catch (error) {
-      res.status(500).json({ message: "Error fetching schedules", error });
+    res.status(500).json({ message: "Error fetching schedules", error });
   }
 };
 
@@ -285,8 +289,17 @@ export const assignSchedulesToStudent = async (req, res) => {
       // **Assign only new schedules**
       student.currentSubjects.push(...newSchedules.map(id => new mongoose.Types.ObjectId(id)));
 
+
       await student.save();
-      console.log("Updated Student Data:", student);
+
+
+      await Schedule.updateMany(
+        { _id: { $in: newSchedules } },
+        { $addToSet: { students: studentId } } // Avoids duplicate student entries
+    );
+
+    console.log("Updated Student Data:", student);
+
 
       res.status(200).json({ message: "Schedules assigned successfully!", student });
   } catch (error) {

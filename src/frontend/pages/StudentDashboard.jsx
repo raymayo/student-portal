@@ -3,12 +3,12 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const StudentDashboard = () => {
-	const { studentId } = useParams(); 
+	const { studentId } = useParams();
 	const [grades, setGrades] = useState([]);
 
-  const calculateFinalGrade = (prelim, midterm, finals) => {
-    return (prelim * 0.30) + (midterm * 0.30) + (finals * 0.40);
-};
+	const calculateFinalGrade = (prelim, midterm, finals) => {
+		return prelim * 0.3 + midterm * 0.3 + finals * 0.4;
+	};
 
 	useEffect(() => {
 		axios
@@ -30,7 +30,7 @@ const StudentDashboard = () => {
 	console.log(grades);
 
 	return (
-		<div className='w-full h-full flex flex-col items-center p-6'>
+		<div className="w-full h-full flex flex-col items-center p-6">
 			<div className="border border-zinc-300 rounded-md bg-white w-3/5 h-full">
 				<table className="w-full h-fit">
 					<thead>
@@ -41,7 +41,7 @@ const StudentDashboard = () => {
 							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Subject
 							</th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Adviser
 							</th>
 							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
@@ -56,7 +56,7 @@ const StudentDashboard = () => {
 							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Equivalent
 							</th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Remarks
 							</th>
 						</tr>
@@ -68,25 +68,30 @@ const StudentDashboard = () => {
 									{index + 1}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-								{grade.schedule.course.courseId} - {grade.schedule.course.courseName}
-								</td>
-                <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-								{grade.teacher.name}
+									{grade.schedule.course.courseId} -{' '}
+									{grade.schedule.course.courseName}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                {grade.termGrades.prelim || "N/A"}
+									{grade.teacher.name || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                {grade.termGrades.midterm || "N/A"}
+									{grade.termGrades.prelim || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                {grade.termGrades.finals || "N/A"}
+									{grade.termGrades.midterm || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-									{calculateFinalGrade(grade.termGrades.prelim, grade.termGrades.midterm, grade.termGrades.finals) || "N/A"}
+									{grade.termGrades.finals || 'N/A'}
 								</td>
-                <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm text-primary">
-                PASSED
+								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+									{calculateFinalGrade(
+										grade.termGrades.prelim,
+										grade.termGrades.midterm,
+										grade.termGrades.finals
+									) || 'N/A'}
+								</td>
+								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm text-primary">
+									PASSED
 								</td>
 							</tr>
 						))}

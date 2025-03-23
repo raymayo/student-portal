@@ -1,40 +1,61 @@
 import { useState, useEffect } from 'react';
+
 import { createSchedule } from '../../services/scheduleService';
 import axios from 'axios';
+import useFormatTime from '../../custom-hooks/useFormatTime.js';
+
+
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+const allYear = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+
 const fullTimeSlots = [
 	{ startTime: 800, endTime: 830 },
-		{ startTime: 830, endTime: 900 },
-		{ startTime: 900, endTime: 930 },
-		{ startTime: 930, endTime: 1000 },
-		{ startTime: 1000, endTime: 1030 },
-		{ startTime: 1030, endTime: 1100 },
-		{ startTime: 1100, endTime: 1130 },
-		{ startTime: 1130, endTime: 1200 },
-		{ startTime: 1200, endTime: 1230 },
-		{ startTime: 1230, endTime: 1300 },
-		{ startTime: 1300, endTime: 1330 },
-		{ startTime: 1330, endTime: 1400 },
-		{ startTime: 1400, endTime: 1430 },
-		{ startTime: 1430, endTime: 1500 },
-		{ startTime: 1500, endTime: 1530 },
-		{ startTime: 1530, endTime: 1600 },
-		{ startTime: 1600, endTime: 1630 },
-		{ startTime: 1630, endTime: 1700 },
-		{ startTime: 1700, endTime: 1730 },
-		{ startTime: 1730, endTime: 1800 },
-		{ startTime: 1800, endTime: 1830 },
-		{ startTime: 1830, endTime: 1900 },
-		{ startTime: 1900, endTime: 1930 },
-		{ startTime: 1930, endTime: 2000 },
-		{ startTime: 2000, endTime: 2030 },
-		{ startTime: 2030, endTime: 2100 },
-		{ startTime: 2100, endTime: 2130 },
+	{ startTime: 830, endTime: 900 },
+	{ startTime: 900, endTime: 930 },
+	{ startTime: 930, endTime: 1000 },
+	{ startTime: 1000, endTime: 1030 },
+	{ startTime: 1030, endTime: 1100 },
+	{ startTime: 1100, endTime: 1130 },
+	{ startTime: 1130, endTime: 1200 },
+	{ startTime: 1200, endTime: 1230 },
+	{ startTime: 1230, endTime: 1300 },
+	{ startTime: 1300, endTime: 1330 },
+	{ startTime: 1330, endTime: 1400 },
+	{ startTime: 1400, endTime: 1430 },
+	{ startTime: 1430, endTime: 1500 },
+	{ startTime: 1500, endTime: 1530 },
+	{ startTime: 1530, endTime: 1600 },
+	{ startTime: 1600, endTime: 1630 },
+	{ startTime: 1630, endTime: 1700 },
+	{ startTime: 1700, endTime: 1730 },
+	{ startTime: 1730, endTime: 1800 },
+	{ startTime: 1800, endTime: 1830 },
+	{ startTime: 1830, endTime: 1900 },
+	{ startTime: 1900, endTime: 1930 },
+	{ startTime: 1930, endTime: 2000 },
+	{ startTime: 2000, endTime: 2030 },
+	{ startTime: 2030, endTime: 2100 },
+	{ startTime: 2100, endTime: 2130 },
 ];
 
+
+
+
 const ScheduleForm = () => {
+
+	const { formatTime } = useFormatTime();
+
+	const [academicYear, setAcademicYear] = useState('');
+	const [yearStart, setYearStart] = useState('');
+	const [yearEnd, setYearEnd] = useState('');
+	const [areaOfStudy, setAreaOfStudy] = useState('');
+	const [courses, setCourses] = useState([]);
+	const [existingSchedules, setExistingSchedules] = useState([]);
+
+
+
 	const [schedule, setSchedule] = useState({
 		course: '',
 		day: [],
@@ -42,15 +63,12 @@ const ScheduleForm = () => {
 		startTime: '',
 		endTime: '',
 		department: '',
-		yearLevel:'',
+		yearLevel: '',
+		semester: '',
+		academicYear:'',
 		teacher: null,
 	});
 
-	const [areaOfStudy, setAreaOfStudy] = useState('')
-	
-	const [courses, setCourses] = useState([]);
-	const [existingSchedules, setExistingSchedules] = useState([]);
-	
 	const onScheduleAdded = async () => {
 		try {
 			// Fetch the updated schedules after adding a new one
@@ -66,26 +84,28 @@ const ScheduleForm = () => {
 		}
 	};
 
-
 	useEffect(() => {
-
 		if (!schedule.yearLevel || !schedule.department || !areaOfStudy) return;
 		const fetchData = async () => {
 			try {
-			  const courseResponse = await axios.get(
-				`http://localhost:5000/api/courses/filter?yearLevel=${schedule.yearLevel}&areaOfStudy=${areaOfStudy}&department=${schedule.department}`
-			  );
-			  console.log("API Response:", courseResponse.data); 
-			  setCourses(Array.isArray(courseResponse.data.courses) ? courseResponse.data.courses : []);
+				const courseResponse = await axios.get(
+					`http://localhost:5000/api/courses/filter?yearLevel=${schedule.yearLevel}&areaOfStudy=${areaOfStudy}&department=${schedule.department}`
+				);
+				console.log('API Response:', courseResponse.data);
+				setCourses(
+					Array.isArray(courseResponse.data.courses)
+						? courseResponse.data.courses
+						: []
+				);
 			} catch (error) {
-			  console.error("Error fetching courses:", error);
-			  setCourses([]); // Reset courses to avoid displaying stale data
+				console.error('Error fetching courses:', error);
+				setCourses([]); // Reset courses to avoid displaying stale data
 			}
-		  };
+		};
 		fetchData();
 	}, [schedule.yearLevel, schedule.department, areaOfStudy]);
 
-	console.log(courses)
+	console.log(courses);
 
 	const handleChange = (e) => {
 		setSchedule({ ...schedule, [e.target.name]: e.target.value });
@@ -104,7 +124,7 @@ const ScheduleForm = () => {
 	const availableStartTimes = fullTimeSlots.filter((slot) => {
 		return !existingSchedules.some(
 			(existing) =>
-				existing.day.some((d) => schedule.day.includes(d)) && 
+				existing.day.some((d) => schedule.day.includes(d)) &&
 				existing.room === schedule.room && // ✅ Matches "COMLAB 2"
 				((slot.startTime >= existing.startTime &&
 					slot.startTime < existing.endTime) ||
@@ -119,7 +139,7 @@ const ScheduleForm = () => {
 			slot.startTime > schedule.startTime &&
 			!existingSchedules.some(
 				(existing) =>
-					existing.day.some((d) => schedule.day.includes(d)) && 
+					existing.day.some((d) => schedule.day.includes(d)) &&
 					existing.room === schedule.room &&
 					((slot.startTime >= existing.startTime &&
 						slot.startTime < existing.endTime) ||
@@ -163,15 +183,13 @@ const ScheduleForm = () => {
 			setSchedule((prev) => ({
 				...prev,
 				day: [...[]], // Ensures state change is detected
-				course: "",
-				room: "",
-				department: "",
-				yearLevel: "",
-				startTime: "",
-				endTime: "",
-			  }));
-			  
-			  
+				course: '',
+				room: '',
+				department: '',
+				yearLevel: '',
+				startTime: '',
+				endTime: '',
+			}));
 
 			// Refresh schedule list
 			const updatedScheduleResponse = await axios.get(
@@ -183,6 +201,24 @@ const ScheduleForm = () => {
 		}
 		console.log('Submitting schedule:', schedule);
 	};
+
+	const handleYearChange = (e) => {
+		const { name, value } = e.target;
+	
+		if (name === "yearStart") {
+		  setYearStart(value);
+		  setYearEnd(""); // Reset yearEnd when yearStart changes
+		} else if (name === "yearEnd") {
+		  setYearEnd(value);
+		  setAcademicYear(`${yearStart}-${value}`);
+		}
+	  };
+	
+	  // Sync academicYear with schedule state
+	  useEffect(() => {
+		setSchedule((prev) => ({ ...prev, academicYear }));
+	  }, [academicYear]);
+	
 
 	return (
 		<form
@@ -196,7 +232,7 @@ const ScheduleForm = () => {
 			</div>
 
 			<div className="flex flex-col gap-4">
-			<label className="w-full flex flex-col gap-1">
+				<label className="w-full flex flex-col gap-1">
 					<h1 className="text-sm font-medium">Department</h1>
 					<select
 						name="department"
@@ -211,46 +247,50 @@ const ScheduleForm = () => {
 						<option value="Teacher Education">Headmasters</option>
 					</select>
 				</label>
-				<label className="w-full flex flex-col gap-1">
-					<h1 className="text-sm font-medium">Area Of Study</h1>
-					
-					<select
-						name="areaOfStudy"
-						value={areaOfStudy}
-						onChange={(e) => setAreaOfStudy(e.target.value)} 
-						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
-						required
-						disabled={!schedule.department}>
-						<option value="" disabled>
-							Select Course
-						</option>
-						<option value="BSBA HRM">BSBA HRM</option>
-						<option value="BSBA FM">BSBA FM</option>
-						<option value="BSA">BSA</option>
-						<option value="BSCS">BSCS</option>
-						<option value="BSED MATH & FIL">BSED MATH & FIL</option>
-						<option value="BSED SOCSTUD">BSED SOCSTUD</option>
-						<option value="BEED">BEED</option>
-						<option value="CPE">CPE</option>
-						<option value="BSHM">BSHM</option>
-					</select>
-				</label>
-				<label className="w-full flex flex-col gap-1">
-					<h1 className="text-sm font-medium">Year Level</h1>
-					<select
-                        name="yearLevel"
-                        value={schedule.yearLevel}
-						onChange={handleChange}
-						className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
-						disabled={!areaOfStudy}
-						required>
-						<option value="">Select Year Level</option>
-						<option value="1">1st Year</option>
-						<option value="2">2nd Year</option>
-						<option value="3">3rd Year</option>
-						<option value="4">4th Year</option>
-					</select>
-				</label>
+
+				<div className="flex gap-2">
+					<label className="w-full flex flex-col gap-1">
+						<h1 className="text-sm font-medium">Area Of Study</h1>
+
+						<select
+							name="areaOfStudy"
+							value={areaOfStudy}
+							onChange={(e) => setAreaOfStudy(e.target.value)}
+							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
+							required
+							disabled={!schedule.department}>
+							<option value="" disabled>
+								Select Course
+							</option>
+							<option value="BSBA HRM">BSBA HRM</option>
+							<option value="BSBA FM">BSBA FM</option>
+							<option value="BSA">BSA</option>
+							<option value="BSCS">BSCS</option>
+							<option value="BSED MATH & FIL">BSED MATH & FIL</option>
+							<option value="BSED SOCSTUD">BSED SOCSTUD</option>
+							<option value="BEED">BEED</option>
+							<option value="CPE">CPE</option>
+							<option value="BSHM">BSHM</option>
+						</select>
+					</label>
+
+					<label className="w-full flex flex-col gap-1">
+						<h1 className="text-sm font-medium">Year Level</h1>
+						<select
+							name="yearLevel"
+							value={schedule.yearLevel}
+							onChange={handleChange}
+							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
+							disabled={!areaOfStudy}
+							required>
+							<option value="">Select Year Level</option>
+							<option value="1">1st Year</option>
+							<option value="2">2nd Year</option>
+							<option value="3">3rd Year</option>
+							<option value="4">4th Year</option>
+						</select>
+					</label>
+				</div>
 				<label className="w-full flex flex-col gap-1">
 					<h1 className="text-sm font-medium">Course</h1>
 					{/* Course Dropdown */}
@@ -268,7 +308,57 @@ const ScheduleForm = () => {
 						))}
 					</select>
 				</label>
-			
+				<select
+					name="semester"
+					value={schedule.semester}
+					onChange={handleChange}
+					className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
+					required>
+					<option value="">Select Semester</option>
+					<option value="1st Semester">1st Semester</option>
+					<option value="2nd Semester">2nd Semester</option>
+					<option value="Summer">Summer</option>
+					<option value="Januarian">Januarian</option>
+					<option value="Octoberian">Octoberian</option>
+				</select>
+				<div>
+					<h1 className="text-sm font-medium mb-1">Academic Year</h1>
+					<label className="w-full flex gap-2">
+						<select
+							name="yearStart"
+							value={yearStart}
+							onChange={handleYearChange}
+							required
+							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md">
+							<option value="" disabled>
+								Select Year Start
+							</option>
+							{allYear.map((year, index) => (
+								<option key={index} value={year}>
+									{year}
+								</option>
+							))}
+						</select>
+						<select
+							name="yearEnd"
+							value={yearEnd}
+							onChange={handleYearChange}
+							required
+							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
+							disabled={!yearStart}>
+							<option value="" disabled>
+								Select Year End
+							</option>
+							{allYear
+								.filter((year) => year > yearStart)
+								.map((year, index) => (
+									<option key={index} value={year}>
+										{year}
+									</option>
+								))}
+						</select>
+					</label>
+				</div>
 
 				{/* Day Dropdown */}
 				<label className="w-full flex flex-col gap-1">
@@ -327,7 +417,7 @@ const ScheduleForm = () => {
 							<option value="">Select Start Time</option>
 							{availableStartTimes.map((slot) => (
 								<option key={slot.startTime} value={slot.startTime}>
-									{slot.startTime}
+									{formatTime(slot.startTime)}
 								</option>
 							))}
 						</select>
@@ -347,7 +437,7 @@ const ScheduleForm = () => {
 							<option value="">Select End Time</option>
 							{availableEndTimes.map((slot) => (
 								<option key={slot.endTime} value={slot.endTime}>
-									{slot.endTime}
+									{formatTime(slot.endTime)}
 								</option>
 							))}
 						</select>

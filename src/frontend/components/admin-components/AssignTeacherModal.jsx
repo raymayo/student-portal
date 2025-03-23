@@ -2,6 +2,15 @@ import { useState, useEffect, useMemo } from 'react';
 import useFormatTime from '../../custom-hooks/useFormatTime.js';
 import axios from 'axios';
 
+
+const departmentToAreaMap = {
+    "Business Education": ["BSBA HRM", "BSBA FM", "BSA"],
+    "Computer Science": ["BSCS"],
+    "Teacher Education": ["BSED MATH & FIL", "BSED SOCSTUD", "BEED", "CPE"],
+    "Hospitality Management": ["BSHM"]
+};
+
+
 const AssignTeacherModal = ({ isOpen, onClose, teacher }) => {
 	if (!isOpen || !teacher) return null;
 
@@ -12,6 +21,8 @@ const AssignTeacherModal = ({ isOpen, onClose, teacher }) => {
 		department: teacher.department,
 		areaOfStudy: 'BSCS',
 	});
+
+	const filteredCourses = filters.department ? departmentToAreaMap[filters.department] || [] : [];
 
 	const [selectedSchedules, setSelectedSchedules] = useState([]); // Selected schedules to assign
 
@@ -89,20 +100,16 @@ const AssignTeacherModal = ({ isOpen, onClose, teacher }) => {
 							onChange={handleChange}
 							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
 							required
-							// disabled={!schedule.department}
+							disabled={!filters.department}
 						>
 							<option value="" disabled>
 								Select Course
 							</option>
-							<option value="BSBA HRM">BSBA HRM</option>
-							<option value="BSBA FM">BSBA FM</option>
-							<option value="BSA">BSA</option>
-							<option value="BSCS">BSCS</option>
-							<option value="BSED MATH & FIL">BSED MATH & FIL</option>
-							<option value="BSED SOCSTUD">BSED SOCSTUD</option>
-							<option value="BEED">BEED</option>
-							<option value="CPE">CPE</option>
-							<option value="BSHM">BSHM</option>
+								{filteredCourses.map((course) => (
+									<option key={course} value={course}>
+										{course}
+									</option>
+								))}
 						</select>
 					</label>
 					<label className="w-full flex flex-col gap-1">

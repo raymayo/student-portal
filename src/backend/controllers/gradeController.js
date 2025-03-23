@@ -24,6 +24,9 @@ export const createGrade = async (req, res) => {
             student: studentId,
             schedule: scheduleId,
             teacher: schedule.teacher, // Get teacher from schedule
+            course: schedule.course,
+            semester: schedule.semester,
+            academicYear: schedule.academicYear,
             termGrades: { prelim: null, midterm: null, finals: null }
         });
 
@@ -71,5 +74,30 @@ export const getStudentGrades = async (req, res) => {
     } catch (error) {
         console.error("Error fetching grades:", error); // Log the exact error
         res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+export const updateGrade = async (req, res) => {
+    try {
+        const { gradeId } = req.params;  // Extract grade's ObjectId from URL
+        const { prelim, midterm, finals } = req.body;
+
+        // ✅ Find the grade by its ID
+        let grade = await Grade.findById(gradeId);
+        if (!grade) {
+            return res.status(404).json({ message: "Grade document not found." });
+        }
+
+        // ✅ Update the grade
+        grade.termGrades.prelim = prelim;
+        grade.termGrades.midterm = midterm;
+        grade.termGrades.finals = finals;
+
+        await grade.save();
+
+        res.status(200).json({ message: "Grade document updated successfully!", grade });
+    } catch (error) {
+        console.error("Error updating grade:", error);
+        res.status(500).json({ message: "Failed to update grade document." });
     }
 };

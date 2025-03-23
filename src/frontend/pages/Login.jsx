@@ -10,9 +10,9 @@ const Login = () => {
 	const { login } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
-		role: 'student', // Default selection
-		email: 'jl@student.com',
-		password: 'student',
+		role: 'teacher', // Default selection
+		email: 'cordova@teacher.com',
+		password: 'teacher',
 	});
 	const [error, setError] = useState('');
 
@@ -35,7 +35,7 @@ const Login = () => {
 					navigate(`/dashboard/${data.user._id}`);
 					break;
 				case 'teacher':
-					navigate('/teacher-dashboard');
+					navigate(`/teacher-dashboard/${data.user._id}`);
 					break;
 				case 'admin':
 					navigate('/admin/dashboard');
