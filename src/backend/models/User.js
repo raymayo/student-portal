@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
                 return this.role === "student";  // ✅ Only required for students
             }
         },
+        set: { type: mongoose.Schema.Types.ObjectId, ref: "Set", default: null },
         areaOfStudy: { type: String },
         grades: [{ type: mongoose.Schema.Types.ObjectId, ref: "Grade", default: [] }],
 
@@ -52,7 +53,8 @@ userSchema.pre("save", function (next) {
         this.teachingSchedules = undefined;
     } else if (this.role === "teacher") {
         if (!this.teachingSchedules) this.teachingSchedules = [];
-        this.currentSubjects = undefined; // Remove student-only fields
+        this.currentSubjects = undefined; 
+        this.grade = undefined;
     } else {
         this.currentSubjects = undefined;
         this.teachingSchedules = undefined;

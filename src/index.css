@@ -52,7 +52,7 @@
 }
 
 .image-holder{
-	background: url('/public/UI/asset2.svg') !important;
+	background: url('/UI/asset2.svg') !important;
 	background-repeat: no-repeat;
 	background-size: contain;
   }

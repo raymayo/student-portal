@@ -1,10 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import useFormatTime from '../custom-hooks/useFormatTime.js';
 import axios from 'axios';
 
 const StudentDashboard = () => {
 	const { studentId } = useParams();
 	const [grades, setGrades] = useState([]);
+
+	const { formatTime } = useFormatTime();
+
+	function GPA(percentage) {
+		if (percentage >= 96) return 1.0;
+		if (percentage >= 93) return 1.25;
+		if (percentage >= 90) return 1.5;
+		if (percentage >= 87) return 1.75;
+		if (percentage >= 84) return 2.0;
+		if (percentage >= 81) return 2.25;
+		if (percentage >= 78) return 2.5;
+		if (percentage >= 75) return 2.75;
+		if (percentage >= 70) return 3.0;
+		return 5.0; // Failing grade
+	}
 
 	const calculateFinalGrade = (prelim, midterm, finals) => {
 		return prelim * 0.3 + midterm * 0.3 + finals * 0.4;
@@ -27,10 +43,15 @@ const StudentDashboard = () => {
 			});
 	}, []);
 
-	console.log(grades);
+	console.log();
 
 	return (
 		<div className="w-full h-full flex flex-col items-center p-6">
+			<div className='flex gap-1 items-center justify-center'>
+				<h1 className='text-xl font-bold'>{grades[0].student.name}'s</h1>
+				<h1>Grades</h1>
+			</div>
+
 			<div className="border border-zinc-300 rounded-md bg-white w-3/5 h-full">
 				<table className="w-full h-fit">
 					<thead>
@@ -40,6 +61,9 @@ const StudentDashboard = () => {
 							</th>
 							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Subject
+							</th>
+							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+								Schedule
 							</th>
 							<th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
 								Adviser
@@ -72,6 +96,10 @@ const StudentDashboard = () => {
 									{grade.schedule.course.courseName}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+									{grade.schedule.day} {formatTime(grade.schedule.startTime)} -{' '}
+									{formatTime(grade.schedule.endTime)}
+								</td>
+								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
 									{grade.teacher.name || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
@@ -84,10 +112,12 @@ const StudentDashboard = () => {
 									{grade.termGrades.finals || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-									{calculateFinalGrade(
-										grade.termGrades.prelim,
-										grade.termGrades.midterm,
-										grade.termGrades.finals
+									{GPA(
+										calculateFinalGrade(
+											grade.termGrades.prelim,
+											grade.termGrades.midterm,
+											grade.termGrades.finals
+										)
 									) || 'N/A'}
 								</td>
 								<td className="border-y border-zinc-200 px-4 py-3 text-left text-sm text-primary">
