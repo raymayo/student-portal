@@ -14,7 +14,7 @@ export const getSchedules = async (req, res) => {
       query["yearLevel"] = yearLevel.trim();
     }
     if (department) {
-      query["department"] = department.trim().toLowerCase();
+      query["department"] = department.trim();
     }
     if (courseId) {
       query["course"] = new mongoose.Types.ObjectId(courseId);

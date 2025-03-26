@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.get('/', getSchedules);
 router.get('/raw', getRawSchedules); 
-router.get("/", getSchedulesByCriteria);
+// router.get("/", getSchedulesByCriteria);
 
 
 router.get('/filter', getFilteredSchedule);
