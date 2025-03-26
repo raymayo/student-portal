@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-
 import { createSchedule } from '../../services/scheduleService';
 import axios from 'axios';
 import useFormatTime from '../../custom-hooks/useFormatTime.js';
 
+
+//TODO filter area of study based on department
 
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -50,7 +51,6 @@ const ScheduleForm = () => {
 	const [academicYear, setAcademicYear] = useState('');
 	const [yearStart, setYearStart] = useState('');
 	const [yearEnd, setYearEnd] = useState('');
-	const [areaOfStudy, setAreaOfStudy] = useState('');
 	const [courses, setCourses] = useState([]);
 	const [existingSchedules, setExistingSchedules] = useState([]);
 
@@ -63,11 +63,54 @@ const ScheduleForm = () => {
 		startTime: '',
 		endTime: '',
 		department: '',
+		areaOfStudy: '',
 		yearLevel: '',
 		semester: '',
 		academicYear:'',
 		teacher: null,
 	});
+
+	useEffect(() => {
+        console.log("Updated Schedule:", schedule);
+    }, [schedule]);
+
+	useEffect(() => {
+
+		if (!schedule.yearLevel || !schedule.department || !schedule.areaOfStudy) return;
+
+		const getExistingSchedules = async () => {
+			try{
+				const scheduleResponse = await axios.get(
+					`http://localhost:5000/api/schedules/filter?yearLevel=${schedule.yearLevel}&department=${schedule.department}&areaOfStudy=${schedule.areaOfStudy}`)
+					setExistingSchedules(scheduleResponse.data);
+					
+			}catch(error){
+				console.error('Error fetching schedules:', error);
+			}
+		}
+
+		getExistingSchedules();
+	},[schedule.yearLevel, schedule.department, schedule.areaOfStudy])
+
+
+	const getAvailableTimeSlots = (fullTimeSlots, existingSchedules, targetRoom, targetDays) => {
+		return fullTimeSlots.filter((slot) => {
+			return !existingSchedules.some((existing) => {
+				const isSameRoom = existing.room === targetRoom; // ✅ Only check conflicts in the same room
+				const isSameDay = existing.day.some((d) => targetDays.includes(d)); // ✅ Only check conflicts on the requested days
+	
+				const isOverlapping =
+					slot.startTime < existing.endTime && slot.endTime > existing.startTime; // ✅ Proper time conflict check
+	
+				return isSameRoom && isSameDay && isOverlapping;
+			});
+		});
+	};
+
+	const availableSlots = getAvailableTimeSlots(fullTimeSlots, existingSchedules, schedule.room, schedule.day);
+console.log("AVAILABLESSSS",availableSlots);
+
+
 
 	const onScheduleAdded = async () => {
 		try {
@@ -85,11 +128,11 @@ const ScheduleForm = () => {
 	};
 
 	useEffect(() => {
-		if (!schedule.yearLevel || !schedule.department || !areaOfStudy) return;
+		if (!schedule.yearLevel || !schedule.department || !schedule.areaOfStudy) return;
 		const fetchData = async () => {
 			try {
 				const courseResponse = await axios.get(
-					`http://localhost:5000/api/courses/filter?yearLevel=${schedule.yearLevel}&areaOfStudy=${areaOfStudy}&department=${schedule.department}`
+					`http://localhost:5000/api/courses/filter?yearLevel=${schedule.yearLevel}&areaOfStudy=${schedule.areaOfStudy}&department=${schedule.department}`
 				);
 				console.log('API Response:', courseResponse.data);
 				setCourses(
@@ -103,52 +146,32 @@ const ScheduleForm = () => {
 			}
 		};
 		fetchData();
-	}, [schedule.yearLevel, schedule.department, areaOfStudy]);
+	}, [schedule.yearLevel, schedule.department, schedule.areaOfStudy]);
 
 	console.log(courses);
 
-	const handleChange = (e) => {
-		setSchedule({ ...schedule, [e.target.name]: e.target.value });
-	};
+    const handleChange = (e) => {
+        setSchedule((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
 
 	const handleStartTimeChange = (e) => {
-		const selectedStartTime = parseInt(e.target.value);
-		setSchedule({ ...schedule, startTime: selectedStartTime, endTime: '' });
+		const selectedStartTime = parseInt(e.target.value, 10);
+		setSchedule((prev) => ({
+			...prev,
+			startTime: selectedStartTime,
+			endTime: null, // Reset properly
+		}));
 	};
 
 	const handleEndTimeChange = (e) => {
 		setSchedule({ ...schedule, endTime: parseInt(e.target.value) });
 	};
 
-	// **Filter available start times**
-	const availableStartTimes = fullTimeSlots.filter((slot) => {
-		return !existingSchedules.some(
-			(existing) =>
-				existing.day.some((d) => schedule.day.includes(d)) &&
-				existing.room === schedule.room && // ✅ Matches "COMLAB 2"
-				((slot.startTime >= existing.startTime &&
-					slot.startTime < existing.endTime) ||
-					(slot.endTime > existing.startTime &&
-						slot.endTime <= existing.endTime))
-		);
-	});
 
-	// **Filter available end times**
-	const availableEndTimes = fullTimeSlots.filter((slot) => {
-		return (
-			slot.startTime > schedule.startTime &&
-			!existingSchedules.some(
-				(existing) =>
-					existing.day.some((d) => schedule.day.includes(d)) &&
-					existing.room === schedule.room &&
-					((slot.startTime >= existing.startTime &&
-						slot.startTime < existing.endTime) ||
-						(slot.endTime > existing.startTime &&
-							slot.endTime <= existing.endTime))
-			)
-		);
-	});
-
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -189,6 +212,10 @@ const ScheduleForm = () => {
 				yearLevel: '',
 				startTime: '',
 				endTime: '',
+				areaOfStudy: '',
+				semester: '',
+				academicYear:'',
+				
 			}));
 
 			// Refresh schedule list
@@ -218,7 +245,8 @@ const ScheduleForm = () => {
 	  useEffect(() => {
 		setSchedule((prev) => ({ ...prev, academicYear }));
 	  }, [academicYear]);
-	
+
+
 
 	return (
 		<form
@@ -254,8 +282,8 @@ const ScheduleForm = () => {
 
 						<select
 							name="areaOfStudy"
-							value={areaOfStudy}
-							onChange={(e) => setAreaOfStudy(e.target.value)}
+							value={schedule.areaOfStudy}
+							onChange={handleChange}
 							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
 							required
 							disabled={!schedule.department}>
@@ -281,7 +309,7 @@ const ScheduleForm = () => {
 							value={schedule.yearLevel}
 							onChange={handleChange}
 							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md cursor-pointer disabled:bg-zinc-200"
-							disabled={!areaOfStudy}
+							disabled={!schedule.areaOfStudy}
 							required>
 							<option value="">Select Year Level</option>
 							<option value="1">1st Year</option>
@@ -374,11 +402,12 @@ const ScheduleForm = () => {
 									checked={schedule.day.includes(day)}
 									onChange={(e) => {
 										const selectedDay = e.target.value;
-										const updatedDays = schedule.day.includes(selectedDay)
-											? schedule.day.filter((d) => d !== selectedDay) // Remove if already selected
-											: [...schedule.day, selectedDay]; // Add if not selected
-
-										setSchedule({ ...schedule, day: updatedDays });
+										setSchedule((prev) => ({
+											...prev,
+											day: prev.day.includes(selectedDay)
+												? prev.day.filter((d) => d !== selectedDay) // Remove if already selected
+												: [...prev.day, selectedDay], // Add if not selected
+										}));
 									}}
 									className="w-4 h-4"
 								/>
@@ -413,9 +442,9 @@ const ScheduleForm = () => {
 							onChange={handleStartTimeChange}
 							required
 							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
-							disabled={!schedule.day || !schedule.room}>
+							disabled={schedule.day.length === 0 || !schedule.room}>
 							<option value="">Select Start Time</option>
-							{availableStartTimes.map((slot) => (
+							{availableSlots.map((slot) => (
 								<option key={slot.startTime} value={slot.startTime}>
 									{formatTime(slot.startTime)}
 								</option>
@@ -435,7 +464,7 @@ const ScheduleForm = () => {
 							className="block w-full px-3 py-2 border border-slate-200 shadow-2xs rounded-md"
 							disabled={!schedule.startTime}>
 							<option value="">Select End Time</option>
-							{availableEndTimes.map((slot) => (
+							{availableSlots.map((slot) => (
 								<option key={slot.endTime} value={slot.endTime}>
 									{formatTime(slot.endTime)}
 								</option>

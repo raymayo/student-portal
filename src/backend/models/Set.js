@@ -1,6 +1,3 @@
-/**
-* @type {mongoose.SchemaDefinitionProperty}
-*/
 
 import mongoose from "mongoose";
 
@@ -12,3 +9,5 @@ const setSchema = new mongoose.Schema({
   schedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }],
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
+
+export default mongoose.model("Set", setSchema);

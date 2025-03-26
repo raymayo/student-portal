@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const scheduleSchema = new mongoose.Schema({
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
     department:{type: String, required: true },
+    areaOfStudy:{type: String, required: true },
     yearLevel:{type:String, enum: ["1", "2", "3", "4"], required: true},
     academicYear: { type: String, required: true }, 
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },   set: { type: mongoose.Schema.Types.ObjectId, ref: "Set", default: null },
