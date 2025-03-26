@@ -1,4 +1,5 @@
-
+import Set from "../models/Set.js";
+import Schedule from "../models/Schedule.js";
 
 export const getAllSets = async (req, res) => {
     try {
@@ -8,6 +9,41 @@ export const getAllSets = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch Sets." });
     }
 };
+
+export const createSet = async (req, res) => {
+    try {
+      const { name, yearLevel, department, areaOfStudy, scheduleIds } = req.body;
+  
+      // Validate schedule IDs
+      const schedules = await Schedule.find({ _id: { $in: scheduleIds } });
+      if (schedules.length !== scheduleIds.length) {
+        return res.status(400).json({ message: "One or more schedules not found" });
+      }
+  
+      // Create new set
+      const newSet = new Set({
+        name,
+        yearLevel,
+        department,
+        areaOfStudy,
+        schedules: scheduleIds,
+      });
+  
+      await newSet.save();
+  
+      // Update each schedule to include the Set reference (if needed)
+      await Schedule.updateMany(
+        { _id: { $in: scheduleIds } },
+        { $set: { set: newSet._id } } // Assuming 'set' field exists in Schedule schema
+      );
+  
+      res.status(201).json(newSet);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  
 
 
 
