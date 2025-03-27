@@ -6,7 +6,8 @@ const scheduleSchema = new mongoose.Schema({
     areaOfStudy:{type: String, required: true },
     yearLevel:{type:String, enum: ["1", "2", "3", "4"], required: true},
     academicYear: { type: String, required: true }, 
-    teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },   set: { type: mongoose.Schema.Types.ObjectId, ref: "Set", default: null },
+    teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, 
+    set: { type: mongoose.Schema.Types.ObjectId, ref: "Set", default: null },
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     day: [{ type: String, enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], required: true }],
     semester: { 
