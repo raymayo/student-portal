@@ -126,6 +126,13 @@ const AdminSidebar = () => {
 						Student Grades
 					</NavLink>
 				</DropdownMenu>
+				<DropdownMenu title="Sets" icon={BookOpen}>
+				<NavLink
+						to="/admin/sets"
+						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
+						Create Set
+					</NavLink>
+				</DropdownMenu>
 			</nav>
 		</div>
 	);

@@ -10,9 +10,9 @@ const Login = () => {
 	const { login } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
-		role: 'teacher', // Default selection
-		email: 'cordova@teacher.com',
-		password: 'teacher',
+		role: 'admin', // Default selection
+		email: 'ray@admin.com',
+		password: 'admin',
 	});
 	const [error, setError] = useState('');
 
