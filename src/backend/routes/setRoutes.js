@@ -7,5 +7,3 @@ const router = express.Router();
 router.post("/", createSet);
 
 export default router;
-
-

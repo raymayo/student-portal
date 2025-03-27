@@ -6,8 +6,6 @@ export default {
       colors: {
         text: "#081609",
         background: "#f1faf2",
-
-
       },
     },
   },

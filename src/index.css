@@ -1,59 +1,58 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-	--color-text: #081609;
-	--color-background: #f1faf2;
-	--color-primary: #6bd425;
-	--color-secondary: #8adc90;
-	--color-accent: #70d878;
+  --color-text: #081609;
+  --color-background: #f1faf2;
+  --color-primary: #6bd425;
+  --color-secondary: #8adc90;
+  --color-accent: #70d878;
 
-	--color-lima: oklch(77.646% 0.22095 136.53);
-	--color-lima-50: oklch(92.743% 0.07879 132.78);
-	--color-lima-100: oklch(90.938% 0.09935 133.36);
-	--color-lima-200: oklch(87.516% 0.13967 133.73);
-	--color-lima-300: oklch(84.307% 0.17629 134.36);
-	--color-lima-400: oklch(81.298% 0.20629 135.54);
-	--color-lima-500: oklch(77.646% 0.22095 136.53);
-	--color-lima-600: oklch(64.236% 0.18053 136.37);
-	--color-lima-700: oklch(50.079% 0.138 136.02);
-	--color-lima-800: oklch(35.144% 0.09228 135.62);
-	--color-lima-900: oklch(18.023% 0.03741 132.62);
-	--color-lima-950: oklch(0% 0 none);
+  --color-lima: oklch(77.646% 0.22095 136.53);
+  --color-lima-50: oklch(92.743% 0.07879 132.78);
+  --color-lima-100: oklch(90.938% 0.09935 133.36);
+  --color-lima-200: oklch(87.516% 0.13967 133.73);
+  --color-lima-300: oklch(84.307% 0.17629 134.36);
+  --color-lima-400: oklch(81.298% 0.20629 135.54);
+  --color-lima-500: oklch(77.646% 0.22095 136.53);
+  --color-lima-600: oklch(64.236% 0.18053 136.37);
+  --color-lima-700: oklch(50.079% 0.138 136.02);
+  --color-lima-800: oklch(35.144% 0.09228 135.62);
+  --color-lima-900: oklch(18.023% 0.03741 132.62);
+  --color-lima-950: oklch(0% 0 none);
 }
 
 * {
-	box-sizing: border-box;
-	font-family: 'Inter', sans-serif;
-	font-optical-sizing: auto;
-	letter-spacing: -0.5px;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.5px;
 }
 
 :root {
-	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
-	input[type='number']::-webkit-inner-spin-button,
-	input[type='number']::-webkit-outer-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
-	}
-}
-
-#image-holder{
-  background: url('/public/UI/asset2.svg');
-}
-
-.image-holder{
-	background: url('/UI/asset2.svg') !important;
-	background-repeat: no-repeat;
-	background-size: contain;
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-  
+}
+
+#image-holder {
+  background: url("/public/UI/asset2.svg");
+}
+
+.image-holder {
+  background: url("/UI/asset2.svg") !important;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

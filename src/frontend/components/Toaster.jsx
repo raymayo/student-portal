@@ -20,9 +20,9 @@ const Toaster = ({ message, type, onClose }) => {
 
   return (
     <div
-      className={`fixed top-5 right-5 px-4 py-3 rounded-lg shadow-lg text-zinc-900 text-sm transition-transform duration-300 ${
+      className={`fixed top-5 right-5 rounded-lg px-4 py-3 text-sm text-zinc-900 shadow-lg transition-transform duration-300 ${
         visible ? "translate-x-0" : "translate-x-[120%]"
-      } ${type === "success" ? "bg-white border border-zinc-300" : "bg-red-500"}`}
+      } ${type === "success" ? "border border-zinc-300 bg-white" : "bg-red-500"}`}
     >
       {message}
     </div>

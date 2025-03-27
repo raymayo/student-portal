@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const GradeTable = () => {
-  return (
-    <div>GradeTable</div>
-  )
-}
+  return <div>GradeTable</div>;
+};
 
-export default GradeTable
+export default GradeTable;

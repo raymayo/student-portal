@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import mongoose from 'mongoose';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import mongoose from "mongoose";
 import authRoutes from "./src/backend/routes/authRoutes.js";
 import scheduleRoutes from "./src/backend/routes/scheduleRoutes.js";
 import courseRoutes from "./src/backend/routes/courseRoutes.js";
@@ -13,31 +13,28 @@ import setRoutes from "./src/backend/routes/setRoutes.js";
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
-
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-
 app.use("/api/auth", authRoutes);
 
-app.use('/api/schedules', scheduleRoutes);
+app.use("/api/schedules", scheduleRoutes);
 
 app.use("/api/courses", courseRoutes);
 
 app.use("/api/users", userRoutes);
 
-app.use('/api/student', studentRoutes);
+app.use("/api/student", studentRoutes);
 
-app.use('/api/grades', gradeRoutes);
+app.use("/api/grades", gradeRoutes);
 
 app.use("/api/sets", setRoutes);
-
 
 const PORT = process.env.PORT || 5000;
 

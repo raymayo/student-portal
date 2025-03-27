@@ -8,7 +8,9 @@ const AdminPanel = () => {
 
   const fetchSchedules = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/schedules/raw");
+      const response = await axios.get(
+        "http://localhost:5000/api/schedules/raw",
+      );
       setSchedules(response.data);
     } catch (error) {
       console.error("Error fetching schedules:", error);
@@ -21,7 +23,7 @@ const AdminPanel = () => {
       <AdminSidebar />
 
       {/* Main Content */}
-      <div className="flex w-full justify-center items-start p-6 bg-zinc-100">
+      <div className="flex w-full items-start justify-center bg-zinc-100 p-6">
         <AdminRoutes />
       </div>
     </div>
