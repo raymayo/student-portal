@@ -2,6 +2,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Check, X } from "lucide-react";
 import axios from "axios";
+import Tooltip from "../Tooltip.jsx";
+import useFormatDay from "../../custom-hooks/useFormatDay.js";
+import useFormatTime from "../../custom-hooks/useFormatTime.js";
 
 const SetCreationForm = () => {
   const allYear = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"];
@@ -14,6 +17,9 @@ const SetCreationForm = () => {
   const [schedules, setSchedules] = useState([]);
 
   const [selectedSchedules, setSelectedSchedules] = useState([]);
+
+  const { formatDay } = useFormatDay();
+  const { formatTime } = useFormatTime();
 
   const [set, setSet] = useState({
     department: "",
@@ -46,11 +52,26 @@ const SetCreationForm = () => {
 
   const handleSelectSchedule = (schedule) => {
     setSelectedSchedules((prev) => {
-      if (prev.some((s) => s._id === schedule._id)) {
-        return prev.filter((s) => s._id !== schedule._id); // Deselect if already selected
-      } else {
-        return [...prev, schedule]; // Add to selection
-      }
+      const isAlreadySelected = prev.some((s) => s._id === schedule._id);
+
+      // Update selectedSchedules state
+      const updatedSelectedSchedules = isAlreadySelected
+        ? prev.filter((s) => s._id !== schedule._id) // Remove if already selected
+        : [...prev, schedule]; // Add if not selected
+
+      // Update set.schedules with only schedule IDs
+      setSet((prevSet) => {
+        const isScheduleInSet = prevSet.schedules.includes(schedule._id);
+
+        return {
+          ...prevSet,
+          schedules: isScheduleInSet
+            ? prevSet.schedules.filter((id) => id !== schedule._id) // Remove ID if already in set
+            : [...prevSet.schedules, schedule._id], // Add only the ID if not in set
+        };
+      });
+
+      return updatedSelectedSchedules; // Return new selected schedules state
     });
   };
 
@@ -94,6 +115,10 @@ const SetCreationForm = () => {
     }
   };
 
+  useEffect(() => {
+    setSet((prev) => ({ ...prev, academicYear }));
+  }, [academicYear]);
+
   const handleRemoveSchedule = (schedule) => {
     setSelectedSchedules((prev) => prev.filter((s) => s._id !== schedule._id));
   };
@@ -101,7 +126,7 @@ const SetCreationForm = () => {
 
   return (
     <div className="grid h-full w-full grid-cols-3 gap-4">
-      <form className="col-span-1 flex flex-col items-stretch justify-start gap-4 rounded-md border border-zinc-200 bg-white">
+      <form className="col-span-1 flex flex-col items-stretch justify-start gap-4 rounded-md border border-zinc-200 bg-white shadow-xs">
         <div className="flex flex-col gap-2.5 p-4">
           <label className="flex w-full flex-col gap-1">
             <h1 className="text-xs font-medium">Department</h1>
@@ -265,21 +290,32 @@ const SetCreationForm = () => {
                 ) : (
                   <span className="shadowm-xs grid h-5 w-5 place-items-center rounded-sm border border-zinc-300"></span>
                 )}
-                {schedule.course.courseId} - {schedule.day} {schedule.time}
+                {schedule.course.courseId} - {formatDay(schedule.day)}{" "}
+                {formatTime(schedule.startTime)} -{" "}
+                {formatTime(schedule.endTime)}
               </li>
             ))}
           </ul>
+          <button className="mt-6 w-full cursor-pointer self-end rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
+            Create Set
+          </button>
         </div>
       </form>
 
-      <div className="col-span-2 flex h-full flex-col rounded-md border border-zinc-200 bg-white p-4">
-        <h1 className="text-xl font-medium">List of Schedule</h1>
+      <div className="col-span-2 flex h-full flex-col rounded-md border border-zinc-200 bg-white p-6 shadow-xs">
+        <h1 className="text-xl font-medium">
+          Set: {set.setName} Course: {set.areaOfStudy} Year Level:{" "}
+          {set.yearLevel}
+        </h1>
+        <h1>
+          Subject Schedule for {set.semester} S.Y. {set.academicYear}
+        </h1>
 
         {/* Wrapper that limits height and enables scrolling */}
         <div className="flex-1 overflow-y-auto rounded-md border border-zinc-200 bg-white">
           <table className="w-full">
             <thead>
-              <tr>
+              <tr className="border-b border-zinc-200">
                 <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
                   #
                 </th>
@@ -295,7 +331,7 @@ const SetCreationForm = () => {
                 <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
                   Room
                 </th>
-                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-zinc-500">
                   Action
                 </th>
               </tr>
@@ -310,24 +346,27 @@ const SetCreationForm = () => {
                     {schedule.course.courseId}
                   </td>
                   <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                    {schedule.day}
+                    {formatDay(schedule.day)}
                   </td>
                   <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                    {schedule.startTime} - {schedule.endTime}
+                    {formatTime(schedule.startTime)} -{" "}
+                    {formatTime(schedule.endTime)}
                   </td>
                   <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
                     {schedule.room}
                   </td>
-                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                    <button
-                      className="cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveSchedule(schedule);
-                      }}
-                    >
-                      <X />
-                    </button>
+                  <td className="max-w-fit border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    <Tooltip text="Remove Schedule" position="top">
+                      <button
+                        className="cursor-pointer rounded-md border border-zinc-300 p-1.5 shadow-2xs transition-all duration-200 hover:bg-zinc-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveSchedule(schedule);
+                        }}
+                      >
+                        <X size={16} />
+                      </button>
+                    </Tooltip>
                   </td>
                 </tr>
               ))}

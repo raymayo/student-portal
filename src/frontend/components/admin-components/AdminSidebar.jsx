@@ -3,12 +3,9 @@ import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
-  BookOpen,
-  Calendar,
   SquareUser,
   GraduationCap,
   ChevronDown,
-  LibraryBig,
   CalendarDays,
   BookMarked,
   FileUser,
@@ -25,7 +22,7 @@ const DropdownMenu = ({ title, icon: Icon, children }) => {
         className="flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-all hover:bg-zinc-200/50"
       >
         <span className="flex items-center gap-2">
-          <Icon size={20} />
+          <Icon size={22} />
           {title}
         </span>
         <ChevronDown
