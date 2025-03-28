@@ -115,74 +115,78 @@ const SetCreationForm = () => {
             <option value="Teacher Education">Headmasters</option>
           </select>
         </label>
-        <label className="flex w-full flex-col gap-1">
-          <h1 className="text-sm font-medium">Course</h1>
-          <select
-            name="areaOfStudy"
-            value={set.areaOfStudy}
-            onChange={handleChange}
-            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
-          >
-            <option value="" disabled>
-              Select Course
-            </option>
-            <option value="BSBA HRM">BSBA HRM</option>
-            <option value="BSBA FM">BSBA FM</option>
-            <option value="BSA">BSA</option>
-            <option value="BSCS">BSCS</option>
-            <option value="BSED MATH & FIL">BSED MATH & FIL</option>
-            <option value="BSED SOCSTUD">BSED SOCSTUD</option>
-            <option value="BEED">BEED</option>
-            <option value="CPE">CPE</option>
-            <option value="BSHM">BSHM</option>
-          </select>
-        </label>
-        <label className="flex w-full flex-col gap-1">
-          <h1 className="text-sm font-medium">Year Level</h1>
-          <select
-            name="yearLevel"
-            value={set.yearLevel}
-            onChange={handleChange}
-            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
-          >
-            <option value="">Select Year Level</option>
-            <option value="1">1st Year</option>
-            <option value="2">2nd Year</option>
-            <option value="3">3rd Year</option>
-            <option value="4">4th Year</option>
-          </select>
-        </label>
-        <label className="flex w-full flex-col gap-1">
-          <h1 className="text-sm font-medium">Set Name</h1>
-          <select
-            name="setName"
-            value={set.setName}
-            onChange={handleChange}
-            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
-          >
-            <option value="">Select Set Name</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-          </select>
-        </label>
-        <label className="flex w-full flex-col gap-1">
-          <h1 className="text-sm font-medium">Semester</h1>
-          <select
-            name="semester"
-            value={set.semester}
-            onChange={handleChange}
-            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
-          >
-            <option value="">Select Semester</option>
-            <option value="1st Semester">1st Semester</option>
-            <option value="2nd Semester">2nd Semester</option>
-            <option value="Summer">Summer</option>
-            <option value="Januarian">Januarian</option>
-            <option value="Octoberian">Octoberian</option>
-          </select>
-        </label>
+        <div className="flex gap-2">
+          <label className="flex w-full flex-col gap-1">
+            <h1 className="text-sm font-medium">Course</h1>
+            <select
+              name="areaOfStudy"
+              value={set.areaOfStudy}
+              onChange={handleChange}
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            >
+              <option value="" disabled>
+                Select Course
+              </option>
+              <option value="BSBA HRM">BSBA HRM</option>
+              <option value="BSBA FM">BSBA FM</option>
+              <option value="BSA">BSA</option>
+              <option value="BSCS">BSCS</option>
+              <option value="BSED MATH & FIL">BSED MATH & FIL</option>
+              <option value="BSED SOCSTUD">BSED SOCSTUD</option>
+              <option value="BEED">BEED</option>
+              <option value="CPE">CPE</option>
+              <option value="BSHM">BSHM</option>
+            </select>
+          </label>
+          <label className="flex w-full flex-col gap-1">
+            <h1 className="text-sm font-medium">Year Level</h1>
+            <select
+              name="yearLevel"
+              value={set.yearLevel}
+              onChange={handleChange}
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            >
+              <option value="">Select Year Level</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </label>
+        </div>
+        <div className="flex gap-2">
+          <label className="flex w-full flex-col gap-1">
+            <h1 className="text-sm font-medium">Set Name</h1>
+            <select
+              name="setName"
+              value={set.setName}
+              onChange={handleChange}
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            >
+              <option value="">Select Set Name</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+          </label>
+          <label className="flex w-full flex-col gap-1">
+            <h1 className="text-sm font-medium">Semester</h1>
+            <select
+              name="semester"
+              value={set.semester}
+              onChange={handleChange}
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            >
+              <option value="">Select Semester</option>
+              <option value="1st Semester">1st Semester</option>
+              <option value="2nd Semester">2nd Semester</option>
+              <option value="Summer">Summer</option>
+              <option value="Januarian">Januarian</option>
+              <option value="Octoberian">Octoberian</option>
+            </select>
+          </label>
+        </div>
         <div>
           <h1 className="mb-1 text-sm font-medium">Academic Year</h1>
           <label className="flex w-full gap-2">
@@ -224,7 +228,7 @@ const SetCreationForm = () => {
           </label>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 h-full">
           <h1 className="text-xl font-medium">Add Schedule to Set</h1>
           <label className="flex w-full flex-col gap-1">
             <h1 className="text-sm font-medium">Pick Course</h1>
@@ -244,8 +248,8 @@ const SetCreationForm = () => {
               ))}
             </select>
           </label>
-          <div>
-            <ul className="rounded-md border border-zinc-200 p-4">
+          <div className="h-full">
+            <ul className="h-full rounded-md border border-zinc-200 p-4">
               {schedules.map((schedule) => (
                 <li
                   key={schedule._id}
@@ -266,7 +270,6 @@ const SetCreationForm = () => {
               ))}
             </ul>
           </div>
-          <button>add schedule</button>
         </div>
       </form>
 
