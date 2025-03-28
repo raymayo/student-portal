@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Check } from "lucide-react";
 import axios from "axios";
 
 const SetCreationForm = () => {
@@ -25,12 +26,13 @@ const SetCreationForm = () => {
   });
 
   const handleCourseChange = async (e) => {
-    setSelectedCourse(e.target.value);
+    const newCourseId = e.target.value;
+    setSelectedCourse(newCourseId);
     setSchedules([]);
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/schedules/by-course?courseId=${selectedCourse}`,
+        `http://localhost:5000/api/schedules/by-course?courseId=${newCourseId}`,
       );
 
       console.log(response.data);
@@ -40,12 +42,12 @@ const SetCreationForm = () => {
     }
   };
 
-  const handleSelectSchedule = (scheduleId) => {
+  const handleSelectSchedule = (schedule) => {
     setSelectedSchedules((prev) => {
-      if (prev.includes(scheduleId)) {
-        return prev.filter((id) => id !== scheduleId); // Deselect if already selected
+      if (prev.some((s) => s._id === schedule._id)) {
+        return prev.filter((s) => s._id !== schedule._id); // Deselect if already selected
       } else {
-        return [...prev, scheduleId]; // Add to selection
+        return [...prev, schedule]; // Add to selection
       }
     });
   };
@@ -90,9 +92,11 @@ const SetCreationForm = () => {
     }
   };
 
+  console.log(selectedSchedules);
+
   return (
     <div className="grid h-full w-full grid-cols-2 gap-6">
-      <form>
+      <form className="flex flex-col gap-4">
         <label className="flex w-full flex-col gap-1">
           <h1 className="text-sm font-medium">Department</h1>
           <select
@@ -109,7 +113,7 @@ const SetCreationForm = () => {
           </select>
         </label>
         <label className="flex w-full flex-col gap-1">
-          <h1 className="text-sm font-medium">areaOfStudy</h1>
+          <h1 className="text-sm font-medium">Course</h1>
           <select
             name="areaOfStudy"
             value={set.areaOfStudy}
@@ -237,20 +241,56 @@ const SetCreationForm = () => {
               ))}
             </select>
           </label>
-          <div></div>
+          <div>
+            <ul>
+              {schedules.map((schedule) => (
+                <li
+                  key={schedule._id}
+                  onClick={() => handleSelectSchedule(schedule)}
+                  className="flex items-center gap-2 rounded-md border p-2"
+                >
+                  {selectedSchedules.some((s) => s._id === schedule._id) ? (
+                    <span className="bg-primary shadowm-xs grid h-5 w-5 cursor-pointer place-items-center rounded-sm text-black">
+                      <Check size={15} />
+                    </span>
+                  ) : (
+                    <span className="shadowm-xs grid h-5 w-5 cursor-pointer place-items-center rounded-sm border border-zinc-300">
+                      {" "}
+                    </span>
+                  )}
+                  {schedule.course.courseId} - {schedule.day} {schedule.time}
+                </li>
+              ))}
+            </ul>
+          </div>
           <button>add schedule</button>
         </div>
       </form>
 
       <div>
         <h1 className="text-xl font-medium">List of Schedule</h1>
-        <div>
-          <table>
-            <th>
-              <td>Course</td>
-              <td>Day</td>
-              <td>Time</td>
-            </th>
+        <div className="w-full">
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Room</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedSchedules.map((schedule) => (
+                <tr key={schedule._id}>
+                  <td>{schedule.course.courseId}</td>
+                  <td>{schedule.day}</td>
+                  <td>
+                    {schedule.startTime} - {schedule.endTime}
+                  </td>
+                  <td>{schedule.room}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
