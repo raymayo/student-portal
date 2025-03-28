@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import axios from "axios";
 
 const SetCreationForm = () => {
@@ -92,18 +92,21 @@ const SetCreationForm = () => {
     }
   };
 
+  const handleRemoveSchedule = (schedule) => {
+    setSelectedSchedules((prev) => prev.filter((s) => s._id !== schedule._id));
+  };
   console.log(selectedSchedules);
 
   return (
-    <div className="grid h-full w-full grid-cols-2 gap-6">
-      <form className="flex flex-col gap-4">
+    <div className="grid h-full w-full grid-cols-3 gap-4">
+      <form className="col-span-1 flex flex-col gap-4 rounded-md border border-zinc-200 bg-white p-4">
         <label className="flex w-full flex-col gap-1">
           <h1 className="text-sm font-medium">Department</h1>
           <select
             name="department"
             value={set.department}
             onChange={handleChange}
-            className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
           >
             <option value="">Department</option>
             <option value="Computer Science">Hackers</option>
@@ -118,7 +121,7 @@ const SetCreationForm = () => {
             name="areaOfStudy"
             value={set.areaOfStudy}
             onChange={handleChange}
-            className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
           >
             <option value="" disabled>
               Select Course
@@ -140,7 +143,7 @@ const SetCreationForm = () => {
             name="yearLevel"
             value={set.yearLevel}
             onChange={handleChange}
-            className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
           >
             <option value="">Select Year Level</option>
             <option value="1">1st Year</option>
@@ -155,7 +158,7 @@ const SetCreationForm = () => {
             name="setName"
             value={set.setName}
             onChange={handleChange}
-            className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
           >
             <option value="">Select Set Name</option>
             <option value="A">A</option>
@@ -170,7 +173,7 @@ const SetCreationForm = () => {
             name="semester"
             value={set.semester}
             onChange={handleChange}
-            className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+            className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
           >
             <option value="">Select Semester</option>
             <option value="1st Semester">1st Semester</option>
@@ -188,7 +191,7 @@ const SetCreationForm = () => {
               value={yearStart}
               onChange={handleYearChange}
               required
-              className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
             >
               <option value="" disabled>
                 Select Year Start
@@ -204,7 +207,7 @@ const SetCreationForm = () => {
               value={yearEnd}
               onChange={handleYearChange}
               required
-              className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
               disabled={!yearStart}
             >
               <option value="" disabled>
@@ -227,7 +230,7 @@ const SetCreationForm = () => {
             <h1 className="text-sm font-medium">Pick Course</h1>
             <select
               name=""
-              className="block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+              className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
               onChange={handleCourseChange}
               value={selectedCourse}
             >
@@ -242,12 +245,12 @@ const SetCreationForm = () => {
             </select>
           </label>
           <div>
-            <ul>
+            <ul className="rounded-md border border-zinc-200 p-4">
               {schedules.map((schedule) => (
                 <li
                   key={schedule._id}
                   onClick={() => handleSelectSchedule(schedule)}
-                  className="flex items-center gap-2 rounded-md border p-2"
+                  className="flex cursor-pointer items-center gap-2 border-b border-zinc-200 p-2"
                 >
                   {selectedSchedules.some((s) => s._id === schedule._id) ? (
                     <span className="bg-primary shadowm-xs grid h-5 w-5 cursor-pointer place-items-center rounded-sm text-black">
@@ -267,27 +270,61 @@ const SetCreationForm = () => {
         </div>
       </form>
 
-      <div>
+      <div className="col-span-2 h-full rounded-md border border-zinc-200 bg-white p-4">
         <h1 className="text-xl font-medium">List of Schedule</h1>
-        <div className="w-full">
+        <div className="h-full w-full rounded-md border border-zinc-200 bg-white">
           <table className="w-full">
             <thead>
               <tr>
-                <th>Course</th>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Room</th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  #
+                </th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  Course
+                </th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  Day
+                </th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  Time
+                </th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  Room
+                </th>
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
-              {selectedSchedules.map((schedule) => (
-                <tr key={schedule._id}>
-                  <td>{schedule.course.courseId}</td>
-                  <td>{schedule.day}</td>
-                  <td>
+              {selectedSchedules.map((schedule, index) => (
+                <tr key={schedule._id} className="">
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    {index + 1}
+                  </td>
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    {schedule.course.courseId}
+                  </td>
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    {schedule.day}
+                  </td>
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
                     {schedule.startTime} - {schedule.endTime}
                   </td>
-                  <td>{schedule.room}</td>
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    {schedule.room}
+                  </td>
+                  <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
+                    <button
+                      className="cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveSchedule(schedule);
+                      }}
+                    >
+                      <X />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
