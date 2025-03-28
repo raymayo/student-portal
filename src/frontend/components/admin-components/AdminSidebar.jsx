@@ -5,8 +5,14 @@ import {
   Users,
   BookOpen,
   Calendar,
+  SquareUser,
   GraduationCap,
   ChevronDown,
+  LibraryBig,
+  CalendarDays,
+  BookMarked,
+  FileUser,
+  Layers,
 } from "lucide-react";
 
 const DropdownMenu = ({ title, icon: Icon, children }) => {
@@ -82,7 +88,7 @@ const AdminSidebar = () => {
         </DropdownMenu>
 
         {/* Students Dropdown */}
-        <DropdownMenu title="Students" icon={GraduationCap}>
+        <DropdownMenu title="Students" icon={SquareUser}>
           {/* <NavLink
 						to="/admin/student"
 						className="block px-3 py-1 text-sm hover:bg-zinc-200/50 rounded-md">
@@ -97,7 +103,7 @@ const AdminSidebar = () => {
         </DropdownMenu>
 
         {/* Courses Dropdown */}
-        <DropdownMenu title="Courses" icon={BookOpen}>
+        <DropdownMenu title="Courses" icon={BookMarked}>
           <NavLink
             to="/admin/courses"
             className="block rounded-md px-3 py-1 text-sm hover:bg-zinc-200/50"
@@ -113,7 +119,7 @@ const AdminSidebar = () => {
         </DropdownMenu>
 
         {/* Schedules Dropdown */}
-        <DropdownMenu title="Schedules" icon={Calendar}>
+        <DropdownMenu title="Schedules" icon={CalendarDays}>
           <NavLink
             to="/admin/assign-teacher"
             className="block rounded-md px-3 py-1 text-sm hover:bg-zinc-200/50"
@@ -128,7 +134,7 @@ const AdminSidebar = () => {
           </NavLink>
         </DropdownMenu>
 
-        <DropdownMenu title="Grades" icon={BookOpen}>
+        <DropdownMenu title="Grades" icon={FileUser}>
           <NavLink
             to="/admin/grades"
             className="block rounded-md px-3 py-1 text-sm hover:bg-zinc-200/50"
@@ -136,7 +142,7 @@ const AdminSidebar = () => {
             Student Grades
           </NavLink>
         </DropdownMenu>
-        <DropdownMenu title="Sets" icon={BookOpen}>
+        <DropdownMenu title="Sets" icon={Layers}>
           <NavLink
             to="/admin/sets"
             className="block rounded-md px-3 py-1 text-sm hover:bg-zinc-200/50"
