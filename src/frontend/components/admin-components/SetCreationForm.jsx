@@ -276,12 +276,12 @@ const SetCreationForm = () => {
           </label>
 
           {/* Ensuring the <ul> takes up remaining space and scrolls properly */}
-          <ul className="flex-1 overflow-y-auto">
+          <ul className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto">
             {schedules.map((schedule) => (
               <li
                 key={schedule._id}
                 onClick={() => handleSelectSchedule(schedule)}
-                className="flex cursor-pointer items-center gap-2 border-b border-zinc-200 p-2"
+                className="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-200 p-2 transition-all duration-200 hover:bg-zinc-100"
               >
                 {selectedSchedules.some((s) => s._id === schedule._id) ? (
                   <span className="bg-primary shadowm-xs grid h-5 w-5 place-items-center rounded-sm text-black">
@@ -290,9 +290,20 @@ const SetCreationForm = () => {
                 ) : (
                   <span className="shadowm-xs grid h-5 w-5 place-items-center rounded-sm border border-zinc-300"></span>
                 )}
-                {schedule.course.courseId} - {formatDay(schedule.day)}{" "}
-                {formatTime(schedule.startTime)} -{" "}
-                {formatTime(schedule.endTime)}
+                <div className="flex w-full justify-between">
+                  <div>
+                    <h1>{schedule.course.courseId}</h1>
+                    <p className="text-sm">{schedule.course.courseName}</p>
+                  </div>
+
+                  <div className="flex flex-col text-right">
+                    <span>{formatDay(schedule.day)}</span>
+                    <span className="text-sm">
+                      {formatTime(schedule.startTime)} -{" "}
+                      {formatTime(schedule.endTime)}
+                    </span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

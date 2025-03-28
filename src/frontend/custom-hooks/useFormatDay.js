@@ -5,6 +5,7 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const useFormatDay = () => {
     const formatDay = useCallback((selectedDays) => {
         if (!selectedDays || selectedDays.length === 0) return "";
+        if (selectedDays.length === 1) return selectedDays[0]; // Handle single item case
 
         const startIdx = WEEKDAYS.indexOf(selectedDays[0]);
         const endIdx = WEEKDAYS.indexOf(selectedDays[selectedDays.length - 1]);
