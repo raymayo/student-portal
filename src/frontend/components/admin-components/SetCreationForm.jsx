@@ -15,6 +15,7 @@ const SetCreationForm = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [schedules, setSchedules] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [selectedSchedules, setSelectedSchedules] = useState([]);
 
@@ -123,6 +124,36 @@ const SetCreationForm = () => {
     setSelectedSchedules((prev) => prev.filter((s) => s._id !== schedule._id));
   };
   console.log(selectedSchedules);
+
+  const handleCreateSet = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:5000/api/sets", set);
+      console.log(response.data);
+    } catch (error) {
+      console.error(
+        "Error creating set:",
+        error.response?.data?.message || error.message,
+      );
+    } finally {
+      setLoading(false);
+      setSelectedSchedules([]);
+      setSelectedCourse("");
+      setSchedules([]);
+      setYearStart("");
+      setYearEnd("");
+      setSet((prev) => ({
+        ...prev,
+        department: "",
+        areaOfStudy: "",
+        yearLevel: "",
+        setName: "",
+        academicYear: "",
+        semester: "",
+        schedules: [],
+      }));
+    }
+  };
 
   return (
     <div className="grid h-full w-full grid-cols-3 gap-4">
@@ -307,8 +338,12 @@ const SetCreationForm = () => {
               </li>
             ))}
           </ul>
-          <button className="mt-6 w-full cursor-pointer self-end rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
-            Create Set
+          <button
+            className="mt-6 w-full cursor-pointer self-end rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+            onClick={handleCreateSet}
+            disabled={loading}
+          >
+            {loading ? "Creating..." : "Create Set"}
           </button>
         </div>
       </form>

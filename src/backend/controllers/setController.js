@@ -14,31 +14,30 @@ export const getAllSets = async (req, res) => {
 
 export const createSet = async (req, res) => {
   try {
-    const { name, yearLevel, department, areaOfStudy, scheduleIds } = req.body;
+    const { setName, yearLevel, department, areaOfStudy, schedules } = req.body;
 
     // Validate schedule IDs
-    const schedules = await Schedule.find({ _id: { $in: scheduleIds } });
-    if (schedules.length !== scheduleIds.length) {
-      return res
-        .status(400)
-        .json({ message: "One or more schedules not found" });
+    const foundSchedules = await Schedule.find({ _id: { $in: schedules } });
+    if (foundSchedules.length !== schedules.length) {
+      return res.status(400).json({ message: "One or more schedules not found" });
     }
+
 
     // Create new set
     const newSet = new Set({
-      name,
+      name: setName, // Match frontend's key
       yearLevel,
       department,
       areaOfStudy,
-      schedules: scheduleIds,
+      schedules, // Match frontend's key
     });
 
     await newSet.save();
 
-    // Update each schedule to include the Set reference (if needed)
+    // Update each schedule to include the Set reference
     await Schedule.updateMany(
-      { _id: { $in: scheduleIds } },
-      { $set: { set: newSet._id } }, // Assuming 'set' field exists in Schedule schema
+      { _id: { $in: schedules } },
+      { $set: { set: newSet._id } }
     );
 
     res.status(201).json(newSet);
