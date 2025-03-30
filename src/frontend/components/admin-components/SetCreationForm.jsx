@@ -5,6 +5,7 @@ import axios from "axios";
 import Tooltip from "../Tooltip.jsx";
 import useFormatDay from "../../custom-hooks/useFormatDay.js";
 import useFormatTime from "../../custom-hooks/useFormatTime.js";
+import ConfirmationModal from "../ConfirmationModal.jsx";
 
 const SetCreationForm = () => {
   const allYear = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"];
@@ -155,10 +156,39 @@ const SetCreationForm = () => {
     }
   };
 
+  const setDetails = [
+    { label: "Set", value: set?.setName },
+    { label: "Course", value: set?.areaOfStudy },
+    { label: "Year Level", value: set?.yearLevel },
+    { label: "Semester", value: set?.semester },
+    { label: "Academic Year", value: set?.academicYear },
+  ];
+
+  const DetailItem = ({ label, value }) => (
+    <div className="w-fit rounded-md border border-zinc-200 px-2.5 py-1.5 text-sm text-zinc-700 shadow-2xs">
+      {label}: <span className="font-medium text-black">{value || "N/A"}</span>
+    </div>
+  );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleConfirm = () => {
+    console.log("Confirmed action!");
+    handleCreateSet();
+    setIsModalOpen(false);
+  };
+  const handleOpenModal = () => {
+    if (selectedSchedules.length === 0) {
+      alert("Please select at least one schedule.");
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="grid h-full w-full grid-cols-3 gap-4">
       <form className="col-span-1 flex flex-col items-stretch justify-start gap-4 rounded-md border border-zinc-200 bg-white shadow-xs">
-        <div className="flex flex-col gap-2.5 p-4">
+        <div className="flex flex-col gap-2.5 p-6">
           <label className="flex w-full flex-col gap-1">
             <h1 className="text-xs font-medium">Department</h1>
             <select
@@ -287,7 +317,7 @@ const SetCreationForm = () => {
             </label>
           </div>
         </div>
-        <div className="flex h-full flex-col p-4">
+        <div className="flex h-full flex-col p-6">
           <h1 className="text-xl font-medium">Add Schedule to Set</h1>
           <label className="flex w-full flex-col gap-1">
             <select
@@ -340,22 +370,22 @@ const SetCreationForm = () => {
           </ul>
           <button
             className="mt-6 w-full cursor-pointer self-end rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
-            onClick={handleCreateSet}
-            disabled={loading}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsModalOpen(true);
+            }}
           >
-            {loading ? "Creating..." : "Create Set"}
+            Create Set
           </button>
         </div>
       </form>
 
       <div className="col-span-2 flex h-full flex-col rounded-md border border-zinc-200 bg-white p-6 shadow-xs">
-        <h1 className="text-xl font-medium">
-          Set: {set.setName} Course: {set.areaOfStudy} Year Level:{" "}
-          {set.yearLevel}
-        </h1>
-        <h1>
-          Subject Schedule for {set.semester} S.Y. {set.academicYear}
-        </h1>
+        <div className="mb-2 flex gap-2">
+          {setDetails.map(({ label, value }) => (
+            <DetailItem key={label} label={label} value={value} />
+          ))}
+        </div>
 
         {/* Wrapper that limits height and enables scrolling */}
         <div className="flex-1 overflow-y-auto rounded-md border border-zinc-200 bg-white">
@@ -420,6 +450,16 @@ const SetCreationForm = () => {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirm}
+        title="Are you sure?"
+        message="This action cannot be undone. This will permanently create the set and add the data from our servers."
+        confirmText="Continue"
+        cancelText="Cancel"
+      />
     </div>
   );
 };
