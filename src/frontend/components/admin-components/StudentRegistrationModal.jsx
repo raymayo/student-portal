@@ -83,7 +83,7 @@ const StudentRegistrationModal = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="cursor-pointer text-zinc-500 hover:text-zinc-900"
           >
-            <X size={16} />
+            <X size={20} />
           </button>
         </div>
 
