@@ -10,7 +10,6 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    role: "admin", // Default selection
     email: "ray@admin.com",
     password: "admin",
   });
@@ -75,7 +74,7 @@ const Login = () => {
           {error && <p className="text-red-500">{error}</p>}
 
           <div className="mt-4 flex w-full flex-col gap-6">
-            <select
+            {/* <select
               name="role"
               value={formData.role}
               onChange={handleChange}
@@ -84,7 +83,7 @@ const Login = () => {
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
               <option value="admin">Admin</option>
-            </select>
+            </select> */}
 
             <label className="flex w-full flex-col gap-2">
               <h1 className="text-sm font-medium">Email</h1>

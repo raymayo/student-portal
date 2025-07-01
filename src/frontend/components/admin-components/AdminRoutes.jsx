@@ -11,7 +11,7 @@ const AdminRoutes = ({ fetchSchedules }) => {
     <Routes>
       <Route path="/dashboard" element={<h1>Admin Dashboard</h1>} />
       <Route path="/schedules" element={<ScheduleForm />} />
-      <Route path="/assign-teacher" element={<AssignTeacherForm />} />
+      <Route path="/manage-teacher" element={<AssignTeacherForm />} />
       <Route path="/courses" element={<AddCourseForm />} />
       <Route path="/teacher-table" element={<TeacherTable />} />
       <Route path="/student-table" element={<StudentTable />} />

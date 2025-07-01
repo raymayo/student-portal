@@ -18,13 +18,13 @@ export const createGrade = async (req, res) => {
         .json({ message: "Grade document already exists." });
     }
 
-    // ✅ Fetch the schedule to get the teacher's ID
+    // Fetch the schedule to get the teacher's ID
     const schedule = await Schedule.findById(scheduleId);
     if (!schedule) {
       return res.status(404).json({ message: "Schedule not found." });
     }
 
-    // ✅ Assign the teacher from the schedule
+    // Assign the teacher from the schedule
     grade = new Grade({
       student: studentId,
       schedule: scheduleId,
@@ -37,7 +37,7 @@ export const createGrade = async (req, res) => {
 
     await grade.save();
 
-    // ✅ Update student's `grades` array in the User collection
+    // Update student's `grades` array in the User collection
     await User.findByIdAndUpdate(studentId, {
       $push: { grades: grade._id },
     });

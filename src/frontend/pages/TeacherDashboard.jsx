@@ -244,32 +244,35 @@ const TeacherDashboard = () => {
       )}
 
       {modalOpen && (
-        <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/75">
           <div className="w-96 rounded bg-white p-6 shadow-lg">
             <h3 className="mb-4 text-lg font-semibold">
-              Edit Grades for {selectedStudent.name}
+              Edit Grades for {selectedStudent.name} in{" "}
+              {selectedSchedule.course.courseName}
             </h3>
-            {["prelim", "midterm", "finals"].map((term) => (
-              <label key={term} className="mb-2 block">
-                {term.charAt(0).toUpperCase() + term.slice(1)}:
-                <input
-                  type="number"
-                  name={term}
-                  value={grades[term]}
-                  onChange={handleGradeChange}
-                  className="ml-2 border p-1"
-                />
-              </label>
-            ))}
+            <div className="flex flex-col gap-2">
+              {["prelim", "midterm", "finals"].map((term) => (
+                <label key={term} className="flex flex-col">
+                  {term.charAt(0).toUpperCase() + term.slice(1)}
+                  <input
+                    type="number"
+                    name={term}
+                    value={grades[term]}
+                    onChange={handleGradeChange}
+                    className="rounded-md border border-zinc-300 px-2 py-1.5 shadow-2xs"
+                  />
+                </label>
+              ))}
+            </div>
             <div className="mt-4 flex justify-end gap-2">
               <button
-                className="rounded bg-gray-400 px-3 py-1 text-white hover:bg-gray-500"
+                className="cursor-pointer rounded border border-zinc-300 bg-white px-3 py-1 text-black shadow-2xs hover:bg-zinc-200"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
-                className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600"
+                className="cursor-pointer rounded bg-zinc-900 px-3 py-1 text-white hover:bg-zinc-900/98"
                 onClick={handleSaveGrades}
               >
                 Save

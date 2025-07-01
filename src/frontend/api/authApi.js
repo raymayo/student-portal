@@ -23,13 +23,14 @@ export const loginUser = async (formData) => {
     console.log("API Response:", response.data); // ✅ Debug full API response
 
     localStorage.setItem("token", response.data.token);
-    localStorage.setItem("role", response.data.role);
+    // Don't store role separately; it's already in user
 
     return { user: response.data.user, token: response.data.token };
   } catch (error) {
     return { error: error.response?.data?.message || "Login failed" };
   }
 };
+
 
 // Get User Profile
 export const getUserProfile = async (token) => {

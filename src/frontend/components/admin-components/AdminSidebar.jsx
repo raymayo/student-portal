@@ -118,10 +118,10 @@ const AdminSidebar = () => {
         {/* Schedules Dropdown */}
         <DropdownMenu title="Schedules" icon={CalendarDays}>
           <NavLink
-            to="/admin/assign-teacher"
+            to="/admin/manage-teacher"
             className="block rounded-md px-3 py-1 text-sm hover:bg-zinc-200/50"
           >
-            Assign Schedule
+            Manage Schedule
           </NavLink>
           <NavLink
             to="/admin/schedules"

@@ -114,7 +114,7 @@ const AssignTeacherForm = () => {
         type={modal.type}
       />
 
-      <h2 className="mb-4 text-xl font-semibold">Assign Teacher to Schedule</h2>
+      <h2 className="mb-4 text-xl font-semibold">Manage Schedule</h2>
 
       <div className="rounded-md border border-zinc-200">
         <table className="w-full">
@@ -132,12 +132,12 @@ const AssignTeacherForm = () => {
               <th className="px-4 py-2 text-left text-sm font-medium text-zinc-500">
                 Room
               </th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-500">
+              {/* <th className="px-4 py-2 text-left text-sm font-medium text-zinc-500">
                 Teacher
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-zinc-500">
                 Action
-              </th>
+              </th> */}
             </tr>
           </thead>
           <tbody>
@@ -157,7 +157,7 @@ const AssignTeacherForm = () => {
                   <td className="border-t border-zinc-200 px-4 py-2 text-left">
                     {schedule.room}
                   </td>
-                  <td className="border-t border-zinc-200 px-4 py-2 text-left">
+                  {/* <td className="border-t border-zinc-200 px-4 py-2 text-left">
                     <select
                       value={
                         selectedTeachers[schedule._id] || schedule.teacher || ""
@@ -182,7 +182,7 @@ const AssignTeacherForm = () => {
                     >
                       Assign
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))
             ) : (

@@ -1,21 +1,21 @@
 import AdminSidebar from "../components/admin-components/AdminSidebar.jsx";
 import AdminRoutes from "../components/admin-components/AdminRoutes.jsx";
-import { useState } from "react";
-import axios from "axios";
+// import { useState } from "react";
+// import axios from "axios";
 
 const AdminPanel = () => {
-  const [schedules, setSchedules] = useState([]);
+  // const [schedules, setSchedules] = useState([]);
 
-  const fetchSchedules = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/schedules/raw",
-      );
-      setSchedules(response.data);
-    } catch (error) {
-      console.error("Error fetching schedules:", error);
-    }
-  };
+  // const fetchSchedules = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:5000/api/schedules/raw",
+  //     );
+  //     setSchedules(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching schedules:", error);
+  //   }
+  // };
 
   return (
     <div className="flex h-screen">
