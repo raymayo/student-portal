@@ -51,6 +51,14 @@ const StudentTable = () => {
 
   return (
     <div className="flex h-full w-full max-w-[1000px] flex-col gap-4">
+      <nav>
+        <select name="" id="">
+          <option value="">Filter by Set</option>
+        </select>
+        <select name="" id="">
+          <option value="">Filter by Set</option>
+        </select>
+      </nav>
       <button
         className="flex cursor-pointer items-center gap-2 self-end rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs font-medium"
         onClick={() => setRegisterModalOpen(true)}

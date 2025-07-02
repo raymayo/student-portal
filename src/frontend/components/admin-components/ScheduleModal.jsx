@@ -1,26 +1,23 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useMemo } from "react";
-import useFormatTime from "../../custom-hooks/useFormatTime.js";
 import axios from "axios";
-// import { createGrade } from '../../services/gradeService.js';
+import useFormatTime from "../../custom-hooks/useFormatTime.js";
 
 const ScheduleModal = ({ isOpen, onClose, student }) => {
   if (!isOpen || !student) return null;
   const { formatTime } = useFormatTime();
 
-  const [courses, setCourses] = useState([]); // List of courses
-  const [selectedCourse, setSelectedCourse] = useState(""); // Selected course ID
-  const [schedules, setSchedules] = useState([]); // Available schedules for selected course
-  const [selectedSchedules, setSelectedSchedules] = useState([]); // Selected schedules to assign
-  const [loadingSchedules, setLoadingSchedules] = useState(false); // Loading state for schedules
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [schedules, setSchedules] = useState([]);
+  const [selectedSchedules, setSelectedSchedules] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [studentSchedules, setStudentSchedules] = useState([]);
 
-  // Fetch courses when modal opens
+  /** Fetch courses and student's current schedules */
   useEffect(() => {
-    const fetchStudentData = async () => {
-      if (!student) return;
-
+    const fetchInitialData = async () => {
       try {
-        // Fetch courses and student schedule simultaneously
         const [coursesRes, schedRes] = await Promise.all([
           axios.get(
             `http://localhost:5000/api/courses/filter?yearLevel=${student.yearLevel}&areaOfStudy=${student.areaOfStudy}`,
@@ -30,117 +27,112 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
           ),
         ]);
 
-        setStudentSchedules(schedRes.data.length ? schedRes.data : []);
-        setCourses(coursesRes.data.courses || []); // Store all courses initially
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        setCourses(coursesRes.data?.courses || []);
+        setStudentSchedules(schedRes.data || []);
+      } catch (err) {
+        console.error("Error fetching initial data:", err);
       }
     };
 
-    fetchStudentData();
-  }, [student]); // Runs when `student` changes
+    fetchInitialData();
+  }, [student]);
 
-  // Use useMemo to prevent unnecessary recalculations
-  const filteredCourses = useMemo(() => {
-    if (!studentSchedules.length || !courses.length) return courses;
+  /** Filter out already assigned courses */
+  const availableCourses = useMemo(() => {
+    const assignedCourseIds = studentSchedules.map((s) => s.course._id);
+    return courses.filter((c) => !assignedCourseIds.includes(c._id));
+  }, [courses, studentSchedules]);
 
-    const excludedIds = studentSchedules.map((schedule) => schedule.course._id);
-    return courses.filter((course) => !excludedIds.includes(course._id));
-  }, [studentSchedules, courses]);
-
-  useEffect(() => {
-    if (filteredCourses.length !== courses.length) {
-      console.log(
-        "Excluded IDs:",
-        studentSchedules.map((schedule) => schedule.course._id),
-      );
-      console.log("Filtered Courses:", filteredCourses);
-      setCourses(filteredCourses);
-    }
-  }, [filteredCourses]); // Update state only when filteredCourses changes
-
-  // Handle course selection and fetch schedules
-  const handleCourseChange = async (event) => {
-    const course_Id = event.target.value;
-    setSelectedCourse(course_Id);
-    setSchedules([]); // Clear previous schedules
-    setLoadingSchedules(true);
+  /** Fetch schedules by selected course */
+  const handleCourseChange = async (e) => {
+    const courseId = e.target.value;
+    setSelectedCourse(courseId);
+    setSchedules([]);
+    setLoading(true);
 
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/schedules/by-course?courseId=${course_Id}`,
+      const res = await axios.get(
+        `http://localhost:5000/api/schedules/by-course?courseId=${courseId}`,
       );
-
-      console.log(studentSchedules);
-
-      setSchedules(response.data);
-    } catch (error) {
-      console.error("Error fetching schedules:", error);
+      setSchedules(res.data);
+    } catch (err) {
+      console.error("Error loading schedules:", err);
     } finally {
-      setLoadingSchedules(false);
+      setLoading(false);
     }
   };
 
-  console.log("Fetched Schedule Data:", schedules);
+  const displayedSchedules = useMemo(() => {
+    const selectedFullSchedules = schedules.filter((s) =>
+      selectedSchedules.includes(s._id),
+    );
 
-  // Toggle schedule selection
-  const handleSelectSchedule = (scheduleId) => {
-    setSelectedSchedules(
-      (prev) =>
-        prev.includes(scheduleId)
-          ? prev.filter((id) => id !== scheduleId) // Remove if already selected
-          : [...prev, scheduleId], // Add if not selected
+    const combined = [...studentSchedules, ...selectedFullSchedules];
+
+    // Remove duplicates by `_id`
+    const uniqueSchedules = Array.from(
+      new Map(combined.map((s) => [s._id, s])).values(),
+    );
+
+    return uniqueSchedules;
+  }, [studentSchedules, selectedSchedules, schedules]);
+
+  /** Toggle selection */
+  const toggleSchedule = (scheduleId) => {
+    setSelectedSchedules((prev) =>
+      prev.includes(scheduleId)
+        ? prev.filter((id) => id !== scheduleId)
+        : [...prev, scheduleId],
     );
   };
 
-  // Assign schedules to student
+  /** Assign selected schedules and create grade entries */
   const handleAssignSchedules = async () => {
-    if (selectedSchedules.length === 0) return;
+    if (!selectedSchedules.length) return;
 
     try {
-      console.log("Selected Schedules:", selectedSchedules);
-
-      // Assign schedules to student
-      const response = await axios.post(
+      const assignRes = await axios.post(
         `http://localhost:5000/api/schedules/${student._id}/assign-schedules`,
-        { scheduleIds: selectedSchedules.map((id) => id.toString()) },
+        { scheduleIds: selectedSchedules },
       );
 
-      // Create grade documents for each assigned schedule
-      for (const scheduleId of selectedSchedules) {
-        await axios.post(
-          `http://localhost:5000/api/grades/${student._id}/${scheduleId}`,
-        );
-      }
+      await Promise.all(
+        selectedSchedules.map((id) =>
+          axios.post(`http://localhost:5000/api/grades/${student._id}/${id}`),
+        ),
+      );
 
-      alert(response.data.message); // ✅ Show success message
-      onClose(); // Close modal after assigning schedules
-    } catch (error) {
-      console.error("Error assigning schedules:", error);
-      alert(error.response?.data?.message || "Failed to assign schedules.");
+      alert(assignRes.data.message || "Schedules assigned.");
+      onClose();
+    } catch (err) {
+      console.error("Assignment error:", err);
+      alert(err.response?.data?.message || "Failed to assign schedules.");
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
       <div className="flex h-full max-h-[800px] w-full max-w-[1500px] flex-col justify-between rounded-md bg-white p-6 shadow-lg">
-        <div className="grid h-full grid-cols-5 gap-4">
-          <div className="col-span-2 flex h-full w-full flex-col gap-2 overflow-y-auto rounded-md border border-zinc-300 p-4">
-            <div className="mb-2 border-b border-zinc-200 pb-2">
+        <div className="grid h-full grid-cols-5 gap-4 overflow-hidden">
+          {/* Left Panel */}
+          <div className="col-span-2 flex flex-col gap-2 overflow-y-auto rounded-md border border-zinc-300 p-4">
+            <div className="mb-2 border-b border-zinc-300 pb-2">
               <h2 className="text-sm">{student.name}'s</h2>
               <h2 className="text-xl font-semibold">Schedule Assignment</h2>
             </div>
-            <label className="block text-sm font-medium text-zinc-950">
+
+            {/* Course Dropdown */}
+            <label className="text-sm font-medium text-zinc-950">
               Select Course
               <select
                 onChange={handleCourseChange}
-                value={selectedCourse || ""}
-                className="mt-1 block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
+                value={selectedCourse}
+                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
               >
                 <option value="" disabled>
                   Select a course
                 </option>
-                {courses.map((course) => (
+                {availableCourses.map((course) => (
                   <option key={course._id} value={course._id}>
                     {course.courseId} - {course.courseName}
                   </option>
@@ -148,97 +140,93 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
               </select>
             </label>
 
-            <div className="mt-4">
-              <ul className="space-y-2">
-                {schedules.map((schedule) => {
-                  const isSelected = selectedSchedules.includes(schedule._id);
+            {/* Schedule Options */}
+            <div className="mt-4 space-y-2">
+              {loading ? (
+                <p>Loading schedules...</p>
+              ) : (
+                schedules.map((sched) => {
+                  const isSelected = selectedSchedules.includes(sched._id);
+                  const isAlreadyAssigned = student.currentSubjects.includes(
+                    sched._id,
+                  );
+
                   return (
                     <li
-                      key={schedule._id}
+                      key={sched._id}
                       className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 shadow-2xs transition-all duration-200 ease-out ${
                         isSelected
                           ? "outline-primary border-primary outline"
                           : "border-zinc-200"
                       }`}
                       onClick={() => {
-                        if (!student.currentSubjects.includes(schedule._id)) {
-                          handleSelectSchedule(schedule._id);
-                        }
+                        if (!isAlreadyAssigned) toggleSchedule(sched._id);
                       }}
                     >
                       <input
                         type="checkbox"
-                        disabled={student.currentSubjects.includes(
-                          schedule._id,
-                        )}
+                        disabled={isAlreadyAssigned}
                         checked={isSelected}
                         onChange={(e) => {
-                          e.stopPropagation(); // Prevents the li click event from firing when clicking the checkbox
-                          handleSelectSchedule(schedule._id);
+                          e.stopPropagation();
+                          toggleSchedule(sched._id);
                         }}
-                        className="hidden" // Hides the checkbox
+                        className="hidden"
                       />
                       <div>
                         <p className="font-semibold">
-                          {schedule.course?.courseId || "N/A"}{" "}
-                          {schedule.course?.courseName || "N/A"}
+                          {sched.course?.courseId || "N/A"}{" "}
+                          {sched.course?.courseName || "N/A"}
                         </p>
                         <p className="text-sm">
-                          {schedule.day.join("-")}{" "}
-                          {formatTime(schedule.startTime)} -{" "}
-                          {formatTime(schedule.endTime)}
+                          {sched.day.join("-")} {formatTime(sched.startTime)} -{" "}
+                          {formatTime(sched.endTime)}
                         </p>
-                        <p>{schedule.teacher?.name || "NO TEACHER"}</p>
+                        <p>{sched.teacher?.name || "NO TEACHER"}</p>
                       </div>
                     </li>
                   );
-                })}
-              </ul>
+                })
+              )}
             </div>
           </div>
 
+          {/* Right Panel - Student's Existing Schedule */}
           <div className="col-span-3">
-            {/* <h2 className="text-sm">{student.name}'s</h2>
-					<h2 className="font-bold text-xl">Schedule Table</h2> */}
-            <div className="h-full w-full rounded-md border border-zinc-200">
-              <table className="h-fit w-full text-left">
+            <div className="h-full w-full overflow-y-auto rounded-md border border-zinc-200">
+              <table className="min-w-full text-left">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                      Course ID
-                    </th>
-                    <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                      Course
-                    </th>
-                    <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                      Day
-                    </th>
-                    <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                      Room
-                    </th>
-                    <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                      Time
-                    </th>
+                    {["Course ID", "Course", "Day", "Room", "Time"].map(
+                      (label) => (
+                        <th
+                          key={label}
+                          className="px-4 py-2.5 text-xs font-medium text-zinc-500"
+                        >
+                          {label}
+                        </th>
+                      ),
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {studentSchedules.length > 0 ? (
-                    studentSchedules.map((sched, index) => (
-                      <tr key={index}>
-                        <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                          {sched.course.courseId}
+                  {displayedSchedules.length ? (
+                    displayedSchedules.map((sched, idx) => (
+                      <tr key={sched._id || idx}>
+                        <td className="border-y border-zinc-300 px-4 py-3 text-sm">
+                          {sched.course?.courseId || "N/A"}
                         </td>
-                        <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                          {sched.course.courseName}
+                        <td className="border-y border-zinc-300 px-4 py-3 text-sm">
+                          {sched.course?.courseName || "N/A"}
                         </td>
-                        <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                          {sched.day}
+                        <td className="border-y border-zinc-300 px-4 py-3 text-sm">
+                          {sched.day?.join("-")}
                         </td>
-                        <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                          {sched.room}
+                        <td className="border-y border-zinc-300 px-4 py-3 text-sm">
+                          {sched.room || "N/A"}
                         </td>
-                        <td className="border-y border-zinc-200 px-4 py-3 text-left text-sm">
-                          {formatTime(sched.startTime)}-
+                        <td className="border-y border-zinc-300 px-4 py-3 text-sm">
+                          {formatTime(sched.startTime)} -{" "}
                           {formatTime(sched.endTime)}
                         </td>
                       </tr>
@@ -247,7 +235,7 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
                     <tr>
                       <td
                         colSpan="5"
-                        className="border-t border-zinc-200 px-4 py-3 text-center text-sm text-gray-500"
+                        className="border-t px-4 py-3 text-center text-sm text-gray-500"
                       >
                         No schedules found.
                       </td>
@@ -259,18 +247,18 @@ const ScheduleModal = ({ isOpen, onClose, student }) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Footer Actions */}
         <div className="mt-4 flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-md bg-gray-300 px-4 py-2 text-sm"
+            className="rounded-md bg-gray-300 px-4 py-2 text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleAssignSchedules}
-            disabled={selectedSchedules.length === 0 || schedules.length === 0}
-            className="w-fit cursor-pointer rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-100"
+            disabled={!selectedSchedules.length}
+            className="rounded-md bg-zinc-950 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           >
             Assign Schedules
           </button>

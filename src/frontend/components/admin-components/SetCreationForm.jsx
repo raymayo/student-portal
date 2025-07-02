@@ -187,8 +187,8 @@ const SetCreationForm = () => {
 
   return (
     <div className="grid h-full w-full grid-cols-3 gap-4">
-      <form className="col-span-1 flex flex-col items-stretch justify-start gap-4 rounded-md border border-zinc-200 bg-white shadow-xs">
-        <div className="flex flex-col gap-2.5 p-6">
+      <form className="col-span-1 flex flex-col items-stretch justify-start gap-4 rounded-md border border-zinc-200 bg-white py-4 shadow-xs">
+        <div className="flex flex-col gap-2.5 px-6">
           <label className="flex w-full flex-col gap-1">
             <h1 className="text-xs font-medium">Department</h1>
             <select
@@ -317,8 +317,8 @@ const SetCreationForm = () => {
             </label>
           </div>
         </div>
-        <div className="flex h-full flex-col p-6">
-          <h1 className="text-xl font-medium">Add Schedule to Set</h1>
+        <div className="flex h-full flex-col px-6">
+          <h1 className="text-lg font-medium">Add Schedule to Set</h1>
           <label className="flex w-full flex-col gap-1">
             <select
               className="block w-full cursor-pointer rounded-md border border-slate-200 px-3 py-2 shadow-2xs"
@@ -351,17 +351,23 @@ const SetCreationForm = () => {
                 ) : (
                   <span className="shadowm-xs grid h-5 w-5 place-items-center rounded-sm border border-zinc-300"></span>
                 )}
-                <div className="flex w-full justify-between">
-                  <div>
-                    <h1>{schedule.course.courseId}</h1>
-                    <p className="text-sm">{schedule.course.courseName}</p>
+                <div className="flex flex-col justify-between">
+                  <div className="">
+                    <h1 className="text-xs font-bold">
+                      {schedule.course.courseId} {schedule.course.courseName}
+                    </h1>
+                    <span className="text-sm">
+                      {formatDay(schedule.day)} {formatTime(schedule.startTime)}{" "}
+                      - {formatTime(schedule.endTime)}
+                    </span>
+                    {/* <p className="max-w-24 truncate text-sm"></p> */}
                   </div>
 
-                  <div className="flex flex-col text-right">
-                    <span>{formatDay(schedule.day)}</span>
+                  <div className="flex flex-col">
                     <span className="text-sm">
-                      {formatTime(schedule.startTime)} -{" "}
-                      {formatTime(schedule.endTime)}
+                      {schedule.teacher?.name
+                        ? ` ${schedule.teacher.name}`
+                        : ""}
                     </span>
                   </div>
                 </div>
