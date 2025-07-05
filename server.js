@@ -10,6 +10,7 @@ import userRoutes from "./src/backend/routes/userRoutes.js";
 import studentRoutes from "./src/backend/routes/studentRoutes.js";
 import gradeRoutes from "./src/backend/routes/gradeRoutes.js";
 import setRoutes from "./src/backend/routes/setRoutes.js";
+import searchRoutes from "./src/backend/routes/manageGradeRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use("/api/student", studentRoutes);
 app.use("/api/grades", gradeRoutes);
 
 app.use("/api/sets", setRoutes);
+
+app.use("/api/schedule/", searchRoutes)
 
 const PORT = process.env.PORT || 5000;
 
