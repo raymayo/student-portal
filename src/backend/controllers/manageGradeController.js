@@ -1,19 +1,11 @@
 
 import Schedule from "../models/Schedule.js";
+import Grade from "../models/Grade.js";
 // eslint-disable-next-line no-unused-vars
 import mongoose from "mongoose";
 
 export const searchSchedule = async (req, res) => {
     const { query = '' } = req.query;
-
-    // const searchCriteria = {
-    //     $or: [
-    //         { "course.name": { $regex: query, $options: "i" } },
-    //         { "teacher.name": { $regex: query, $options: "i" } },
-    //         { semester: { $regex: query, $options: "i" } },
-    //         { academicYear: { $regex: query, $options: "i" } },
-    //     ],
-    // }
 
     try {
         const pipeline = [
@@ -26,6 +18,16 @@ export const searchSchedule = async (req, res) => {
                 }
             },
             { $unwind: '$course' },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "teacher",
+                    foreignField: "_id",
+                    as: "teacher",
+                },
+            },
+            { $unwind: { path: "$teacher", preserveNullAndEmptyArrays: true } },
+
             {
                 $match: {
                     $and: [
@@ -53,24 +55,21 @@ export const searchSchedule = async (req, res) => {
     }
 }
 
-export const getStudentsOnSchedule = async (req, res) => {
-    const { id } = req.params;
+export const getGradesOnSchedule = async (req, res) => {
+    const { id: scheduleId } = req.params;
 
     try {
-        const schedule = await Schedule.findById(id).populate('students').populate({
-            path: 'teacher',
-            select: 'name'
-        }).populate({
-            path: 'course',
-            select: 'courseId courseName'
-        });
+        const grades = await Grade.find({ schedule: scheduleId })
+            .populate('student', 'name')
+            .populate('course', 'courseName courseId');
 
-        if (!schedule) {
-            return res.status(404).json({ message: 'Schedule not found' });
+        if (!grades || grades.length === 0) {
+            return res.status(404).json({ message: 'No grades found for this schedule' });
         }
-        res.status(200).json(schedule);
+
+        res.status(200).json(grades);
     } catch (error) {
-        console.error('Error fetching schedule:', error);
-        res.status(500).json({ message: 'Error fetching schedule', error });
+        console.error('Error fetching grades for schedule:', error);
+        res.status(500).json({ message: 'Error fetching grades for schedule', error });
     }
 };

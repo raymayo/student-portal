@@ -1,39 +1,108 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import useFormatTime from "../../custom-hooks/useFormatTime.js";
+
+import { SquarePen, Eye } from "lucide-react";
+import axios from "axios";
 
 const GradeTable = () => {
+  const [search, setSearch] = useState("");
+  const [schedule, setSchedule] = useState([]);
+
+  const { formatTime } = useFormatTime();
+
+  const fetchSchedule = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/schedule/search?query=${search}`,
+      );
+      setSchedule(res.data);
+      console.log(schedule);
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+    }
+  };
+
   return (
-    <div>
-      <nav>
-        <input type="text" />
-        <button>Search</button>
+    <div className="h-full w-full">
+      <nav className="m-auto flex max-w-xl gap-2 p-4">
+        <input
+          className="w-full rounded-md border border-zinc-300 px-2 py-1"
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by Course ID or Description"
+        />
+        <button
+          className="rounded-md border bg-zinc-900 px-2 py-1.5 text-white"
+          onClick={fetchSchedule}
+        >
+          Search
+        </button>
       </nav>
-      <div className="w-full">
-        <table className="w-full border">
+      <div className="h-fit rounded-md border border-zinc-200 bg-white">
+        <table className="h-full w-full">
           <thead className="w-full">
             <tr className="w-full">
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
                 #
               </th>
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                Student ID
+                Course ID
               </th>
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                Name
+                Description
               </th>
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                Course
+                Instructor
               </th>
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                Year Level
+                Day
               </th>
               <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
-                Grade
+                Time
+              </th>
+              <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                Academic Year
+              </th>
+              <th className="px-4 py-2.5 text-left text-xs font-medium text-zinc-500">
+                Actions
               </th>
             </tr>
           </thead>
           <tbody>
-            {/* Example row, replace with dynamic data */}
-            <tr></tr>
+            {schedule.map((item, index) => (
+              <tr key={item._id} className="">
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {index + 1}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {item.course.courseId}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {item.course.courseName}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {item.teacher?.name || "N/A"}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {item.day}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {formatTime(item.startTime)} - {formatTime(item.endTime)}
+                </td>
+                <td className="border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  {item.academicYear}
+                </td>
+                <td className="flex gap-1.5 border-t border-zinc-200 px-4 py-3 text-left text-sm">
+                  <button className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5">
+                    <Eye size={18} />
+                  </button>
+                  <button className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5">
+                    <SquarePen size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
