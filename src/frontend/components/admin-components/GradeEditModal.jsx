@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { X } from "lucide-react";
+import { X, SquareAsterisk, Square } from "lucide-react";
 
 const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
   //   const [students, setStudents] = useState([]);
@@ -51,7 +51,7 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
@@ -68,11 +68,10 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
       const res = await axios.put(
         "http://localhost:5000/api/grades/bulk",
         updatedGrades,
-        {
-          headers: { "Content-Type": "application/json" },
-        },
       );
-      console.log("Bulk update success:", res.data);
+      console.log("Bulk update success:");
+      alert("Grades updated successfully!");
+      setSelectedIds([]); // Clear selection after save
     } catch (err) {
       console.error("Bulk update failed:", err);
     }
@@ -80,8 +79,19 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
 
   if (!isOpen) return null;
 
-  const cellClass = "border-t border-zinc-200 px-4 py-3 text-left text-sm";
-  const headerClass = "px-4 py-2.5 text-left text-xs font-medium text-zinc-500";
+  const cellClass =
+    "border-t border-zinc-200 px-4 py-3 text-left text-sm accent-zinc-900";
+  const headerClass =
+    "px-4 py-2.5 text-left text-xs font-medium text-zinc-500 ";
+
+  const handleCheckAll = () => {
+    if (selectedIds.length === rows.length) {
+      setSelectedIds([]); // Uncheck all
+    } else {
+      const allIds = rows.map((row) => row._id);
+      setSelectedIds(allIds); // Check all
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -95,11 +105,22 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
 
         {title && <h2 className="mb-4 text-xl font-semibold">{title}</h2>}
 
-        <div>
+        <div className="max-w-full border">
           <table className="h-full w-full">
             <thead>
               <tr>
-                <th className={headerClass}>Select</th>
+                <th className={headerClass + " flex items-center gap-1"}>
+                  <button
+                    onClick={handleCheckAll}
+                    className="flex cursor-pointer items-center justify-center text-left text-sm text-zinc-900"
+                  >
+                    {selectedIds.length === rows.length ? (
+                      <SquareAsterisk size={20} />
+                    ) : (
+                      <Square size={20} />
+                    )}
+                  </button>
+                </th>
                 <th className={headerClass}>Name</th>
                 <th className={headerClass}>Prelim</th>
                 <th className={headerClass}>Midterm</th>
@@ -112,6 +133,7 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
                   <td className={cellClass}>
                     <input
                       type="checkbox"
+                      className="cursor-pointer"
                       checked={selectedIds.includes(row._id)}
                       onChange={() => toggleSelect(row._id)}
                     />
@@ -132,16 +154,15 @@ const GradeEditModal = ({ isOpen, onClose, title, scheduleId }) => {
               ))}
             </tbody>
           </table>
-
-          {selectedIds.length > 0 && (
-            <button
-              onClick={saveChanges}
-              className="mt-4 rounded bg-blue-600 px-4 py-2 text-white"
-            >
-              Save Changes ({selectedIds.length})
-            </button>
-          )}
         </div>
+        {selectedIds.length > 0 && (
+          <button
+            onClick={saveChanges}
+            className="mt-4 rounded bg-zinc-950 px-4 py-2 text-white"
+          >
+            Save ({selectedIds.length})
+          </button>
+        )}
       </div>
     </div>
   );

@@ -131,7 +131,9 @@ export const bulkUpdateGrades = async (req, res) => {
 
   try {
     const result = await Grade.bulkWrite(bulkOps);
-    res.json({ message: "Grades updated", result });
+    // res.json({ message: "Grades updated", result });
+    console.log('Grade updated:', result); // This should log
+    res.status(200).json(result);
   } catch (error) {
     console.error("Bulk update error:", error);
     res.status(500).json({ error: "Failed to update grades" });
