@@ -118,3 +118,22 @@ export const updateGrade = async (req, res) => {
     res.status(500).json({ message: "Failed to update grade document." });
   }
 };
+
+export const bulkUpdateGrades = async (req, res) => {
+  const updates = req.body;
+
+  const bulkOps = updates.map(({ _id, termGrades }) => ({
+    updateOne: {
+      filter: { _id },
+      update: { $set: { termGrades } },
+    }
+  }))
+
+  try {
+    const result = await Grade.bulkWrite(bulkOps);
+    res.json({ message: "Grades updated", result });
+  } catch (error) {
+    console.error("Bulk update error:", error);
+    res.status(500).json({ error: "Failed to update grades" });
+  }
+};

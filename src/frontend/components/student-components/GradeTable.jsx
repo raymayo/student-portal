@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useFormatTime from "../../custom-hooks/useFormatTime.js";
+import GradeViewModal from "../admin-components/GradeViewModal.jsx";
 
 import { SquarePen, Eye } from "lucide-react";
 import axios from "axios";
+import GradeEditModal from "../admin-components/GradeEditModal.jsx";
 
 const GradeTable = () => {
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedScheduleId, setSelectedScheduleId] = useState(null);
   const [search, setSearch] = useState("");
   const [schedule, setSchedule] = useState([]);
 
@@ -20,6 +25,16 @@ const GradeTable = () => {
     } catch (error) {
       console.error("Error fetching schedule:", error);
     }
+  };
+
+  const openViewModal = (id) => {
+    setSelectedScheduleId(id);
+    setViewModalOpen(true);
+  };
+
+  const openEditModal = (id) => {
+    setSelectedScheduleId(id);
+    setEditModalOpen(true);
   };
 
   return (
@@ -94,10 +109,16 @@ const GradeTable = () => {
                   {item.academicYear}
                 </td>
                 <td className="flex gap-1.5 border-t border-zinc-200 px-4 py-3 text-left text-sm">
-                  <button className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5">
+                  <button
+                    onClick={() => openViewModal(item._id)}
+                    className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5"
+                  >
                     <Eye size={18} />
                   </button>
-                  <button className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5">
+                  <button
+                    onClick={() => openEditModal(item._id)}
+                    className="grid cursor-pointer place-items-center rounded-md border border-zinc-300 p-1.5"
+                  >
                     <SquarePen size={18} />
                   </button>
                 </td>
@@ -106,6 +127,19 @@ const GradeTable = () => {
           </tbody>
         </table>
       </div>
+      <GradeViewModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        scheduleId={selectedScheduleId}
+        title="View Grades"
+      ></GradeViewModal>
+
+      <GradeEditModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        scheduleId={selectedScheduleId}
+        title="Edit Grades"
+      ></GradeEditModal>
     </div>
   );
 };
